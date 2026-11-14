@@ -155,6 +155,24 @@ O script `deploy.sh`:
 Arquivos **não versionados ou ignorados** (`.env`, `DEPLOYED_VERSION`, arquivos
 criados manualmente no servidor) são preservados pelo `git reset --hard`.
 
+### Versão exibida no sistema
+
+O rodapé das telas — inclusive a base da tela de login — mostra a tag implantada:
+
+```
+SIGMON — Sistema de Gerenciamento de Cameras e Alarmes © 2026 — v1.0.2
+```
+
+A versão é resolvida por `appVersion()` (`config/app.php`), nesta ordem:
+
+1. `DEPLOYED_VERSION` (montado pelo compose em `/var/www/html/VERSION`) — é o
+   registro do que o `deploy.sh` efetivamente implantou;
+2. `APP_VERSION` (tag semver injetada no build da imagem, `ARG` do
+   `docker/Dockerfile.nginx`).
+
+Sem nenhuma das duas o número é simplesmente omitido. O `deploy.sh` cria
+`DEPLOYED_VERSION` (vazio) antes do `up -d` para o mount não virar diretório.
+
 ### Migrations automáticas no deploy
 
 As migrations pendentes são aplicadas **automaticamente na primeira requisição**

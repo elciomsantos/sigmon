@@ -2,11 +2,12 @@
     return;
 } ?>
 <footer class="footer mt-auto py-3 bg-light">
-    <div class="container text-center">
-        <span class="text-muted">
-            SIGMON — Sistema de Gerenciamento de Cameras e Alarmes &copy; <?php echo date('Y'); ?> -
-            <span class="developer-name">Beta +</span>
-        </span>
+    <div class="container">
+        <?php $footerVariant = 'default';
+        require __DIR__ . '/partials/app-footer.php'; ?>
+        <div class="text-center">
+            <small class="text-muted"><span class="developer-name">Beta +</span></small>
+        </div>
     </div>
 </footer>
 

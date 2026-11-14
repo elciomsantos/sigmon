@@ -119,5 +119,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          # APP_VERSION alimenta o rodape da tela de login (appVersion()).
+          # Em build disparado por tag, needs.version nao roda: usa o nome da tag.
+          build-args: |
+            APP_VERSION=${{ needs.version.outputs.version || github.ref_name }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
