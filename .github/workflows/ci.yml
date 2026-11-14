@@ -321,7 +321,7 @@ jobs:
   open-main-pr:
     name: Open PR to main
     needs: [security-summary]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/fix/dev-development' && needs.security-summary.result == 'success'
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/fix/dev-development' && needs.security-summary.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: read
