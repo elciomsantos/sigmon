@@ -443,7 +443,7 @@ vendor/bin/phpstan analyse
 
 | Suite | Testes | Cobertura |
 |-------|--------|-----------|
-| Unit | SecurityTest, LocaisServiceTest, AlarmeServiceTest, EquipamentoServiceTest, FileUploadValidationTest, FormValidatorTest, ManutencaoServiceTest, LookupServiceTest, RateLimiterTest, RequestValidatorTest, ApiResponseTest, MojibakeRepairTest | Classes core, validação, segurança, lookups |
+| Unit | SecurityTest, LocaisServiceTest, AlarmeServiceTest, EquipamentoServiceTest, FileUploadValidationTest, FormValidatorTest, ManutencaoServiceTest, LookupServiceTest, RateLimiterTest, RequestValidatorTest, ApiResponseTest, MojibakeRepairTest, AppVersionTest | Classes core, validação, segurança, lookups |
 | Integration | EquipamentoServiceTest | CRUD com banco |
 | Api | AlarmeApiTest, CameraApiTest, HealthTest | Endpoints (requer servidor) |
 | Js | Vitest (`tests/Js`) | Frontend/API smoke |

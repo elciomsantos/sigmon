@@ -52,6 +52,62 @@ function isHttpsRequest(): bool
     return false;
 }
 
+/**
+ * Versao implantada, quando conhecida.
+ *
+ * Ordem de resolucao (a mais confiavel primeiro):
+ *   1. arquivo VERSION na raiz do projeto — em producao, o arquivo
+ *      DEPLOYED_VERSION do servidor e montado nesse caminho pelo
+ *      docker-compose.prod.yml, entao reflete o que foi realmente implantado
+ *      (funciona mesmo com imagens antigas, sem rebuild);
+ *   2. variavel de ambiente APP_VERSION — tag semver injetada no build da
+ *      imagem (ARG do docker/Dockerfile.nginx), usado como fallback.
+ *
+ * Retorna null quando a versao nao esta disponivel: a interface simplesmente
+ * omite o numero em vez de exibir um valor inventado. O placeholder "dev"
+ * (default do ARG) tambem nao e exibido.
+ */
+function appVersion(): ?string
+{
+    // Cache leve: evita reler o arquivo a cada chamada dentro da mesma
+    // requisicao, sem impedir que o valor seja recalculado (usado em testes).
+    static $cachedInput = null;
+    static $cachedResult = null;
+
+    $candidates = [];
+
+    $versionFile = dirname(__DIR__) . '/VERSION';
+    if (is_file($versionFile)) {
+        $fromFile = trim((string) @file_get_contents($versionFile));
+        if ($fromFile !== '') {
+            $candidates[] = $fromFile;
+        }
+    }
+
+    $fromEnv = appEnv('APP_VERSION');
+    if (is_string($fromEnv) && trim($fromEnv) !== '') {
+        $candidates[] = trim($fromEnv);
+    }
+
+    $input = implode("\n", $candidates);
+    if ($input === $cachedInput) {
+        return $cachedResult;
+    }
+
+    $result = null;
+    foreach ($candidates as $candidate) {
+        $version = preg_replace('/[^A-Za-z0-9._+-]/', '', $candidate);
+        if (is_string($version) && $version !== '' && $version !== 'dev') {
+            $result = $version;
+            break;
+        }
+    }
+
+    $cachedInput = $input;
+
+    return $cachedResult = $result;
+}
+
 function configureSessionSecurity(): void
 {
     if (session_status() !== PHP_SESSION_NONE) {

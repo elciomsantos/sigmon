@@ -108,6 +108,12 @@ RUN mkdir -p storage/ratelimit storage/cep_cache public/uploads \
 
 ENV SIGMON_ENV=production
 
+# Versao exibida no rodape (tag semver do CD, ex.: v1.0.2).
+# O workflow .github/workflows/cd.yml passa APP_VERSION como build-arg;
+# quando ausente, a interface omite o numero em vez de exibir um valor falso.
+ARG APP_VERSION=dev
+ENV APP_VERSION=${APP_VERSION}
+
 # Remover default do Nginx (evitar conflito)
 RUN rm -f /etc/nginx/sites-enabled/default \
     && mkdir -p /run/php /var/cache/nginx /var/log/nginx /var/lib/nginx/body \

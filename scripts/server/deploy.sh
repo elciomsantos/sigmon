@@ -54,6 +54,11 @@ IMAGE_REF="ghcr.io/${GITHUB_REPOSITORY}:${APP_TAG}"
 
 log "Iniciando deploy (dir=$SIGMON_DIR, imagem=$IMAGE_REF)"
 
+# Garante que o arquivo exista ANTES do `compose up -d`: o compose monta
+# ./DEPLOYED_VERSION em /var/www/html/VERSION e, se o caminho nao existisse,
+# o Docker criaria um diretorio no lugar do arquivo.
+[ -f DEPLOYED_VERSION ] || : > DEPLOYED_VERSION
+
 # ---------------------------------------------------------------------------
 # 1. Estado atual e pull da imagem
 # ---------------------------------------------------------------------------

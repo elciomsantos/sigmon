@@ -10,8 +10,10 @@ unset($_SESSION['error']);
 <style nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
 .page-login {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 18px;
     min-height: 100vh;
     padding: 24px;
     background: url('<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/tela_fundo.png') no-repeat center center fixed;
@@ -24,6 +26,15 @@ unset($_SESSION['error']);
 
 .page-login .login-wrapper {
     width: min(420px, 100%);
+}
+
+/* Rodape no canto inferior da tela */
+.page-login .login-footer {
+    margin-top: auto;
+    padding-top: 8px;
+    font-size: .8rem;
+    letter-spacing: .3px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .55);
 }
 
 .page-login .login-card {
@@ -91,4 +102,9 @@ unset($_SESSION['error']);
             </small>
         </div>
     </div>
+</div>
+
+<?php $footerVariant = 'dark'; ?>
+<div class="login-footer">
+    <?php require __DIR__ . '/../inc/partials/app-footer.php'; ?>
 </div>

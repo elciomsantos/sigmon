@@ -102,6 +102,9 @@ services:
     volumes:
       - app_storage:/var/www/html/storage
       - app_uploads:/var/www/html/public/uploads
+      # DEPLOYED_VERSION e lido pelo appVersion() e exibido no rodape/login
+      # (ultima tag implantada). deploy.sh cria o arquivo antes do `up`.
+      - ./DEPLOYED_VERSION:/var/www/html/VERSION:ro
       # Certificados TLS (self-signed gerado no entrypoint; CA interna via docker cp)
       - nginx_certs:/etc/nginx/certs
     depends_on:
