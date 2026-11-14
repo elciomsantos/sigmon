@@ -9,9 +9,9 @@ unset($_SESSION['error']);
 
 <style nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
 .page-login {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    justify-items: center;
     align-items: center;
     gap: 18px;
     min-height: 100vh;
@@ -28,9 +28,7 @@ unset($_SESSION['error']);
     width: min(420px, 100%);
 }
 
-/* Rodape no canto inferior da tela */
 .page-login .login-footer {
-    margin-top: auto;
     padding-top: 8px;
     font-size: .8rem;
     letter-spacing: .3px;
