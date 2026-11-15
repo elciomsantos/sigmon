@@ -147,10 +147,11 @@ O script `deploy.sh`:
 
 1. lê `APP_TAG` do `.env` (default `latest`);
 2. executa `docker compose pull app`;
-3. compara a imagem em execução com a baixada;
-4. se mudou, executa `docker compose up -d --no-build --force-recreate app`;
+3. compara a imagem baixada e a versão visível dentro do container com o estado atual;
+4. se qualquer uma mudou, executa `docker compose up -d --no-build --force-recreate app`;
 5. aguarda o healthcheck;
-6. grava a versão da imagem em `DEPLOYED_VERSION`.
+6. grava a versão da imagem em `DEPLOYED_VERSION` sem substituir o arquivo, para
+   preservar o inode usado pelo bind mount.
 
 Arquivos **não versionados ou ignorados** (`.env`, `DEPLOYED_VERSION`, arquivos
 criados manualmente no servidor) são preservados pelo `git reset --hard`.
@@ -172,6 +173,9 @@ A versão é resolvida por `appVersion()` (`config/app.php`), nesta ordem:
 
 Sem nenhuma das duas o número é simplesmente omitido. O `deploy.sh` cria
 `DEPLOYED_VERSION` (vazio) antes do `up -d` para o mount não virar diretório.
+Como o arquivo é montado individualmente, o deploy atualiza seu conteúdo sem
+renomeá-lo. Se a versão lida dentro do container divergir da imagem baixada, o
+script recria o container para atualizar o bind mount.
 
 ### Migrations automáticas no deploy
 
@@ -238,3 +242,4 @@ docker image inspect ghcr.io/defesatecnologia-lang/sigmon:latest \
 | Imagem nova não aplica | Confirme que o merge chegou na `main` e que o workflow CD publicou a imagem. `docker compose pull app` deve baixar. |
 | Container unhealthy | `docker compose logs --tail=100 app`; o script também imprime os últimos logs. |
 | `DEPLOYED_VERSION` não atualiza | O deploy falhou antes da etapa final; veja a saída do script. |
+| Rodapé mostra versão anterior | Rode novamente `./scripts/server/deploy.sh`; o script compara a versão montada no container e o recria se estiver desatualizada. |

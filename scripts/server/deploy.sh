@@ -64,8 +64,10 @@ log "Iniciando deploy (dir=$SIGMON_DIR, imagem=$IMAGE_REF)"
 # ---------------------------------------------------------------------------
 current_container="$(compose ps -q app 2>/dev/null || true)"
 before_image=""
+before_version=""
 if [ -n "$current_container" ]; then
     before_image="$(docker inspect --format '{{.Image}}' "$current_container" 2>/dev/null || true)"
+    before_version="$(docker exec "$current_container" cat /var/www/html/VERSION 2>/dev/null || true)"
 fi
 
 log "Baixando imagem do GHCR..."
@@ -76,11 +78,33 @@ fi
 target_image="$(docker image inspect --format '{{.Id}}' "$IMAGE_REF" 2>/dev/null || true)"
 [ -n "$target_image" ] || die "imagem nao encontrada apos o pull: $IMAGE_REF"
 
-if [ -n "$current_container" ] && [ "$before_image" = "$target_image" ]; then
-    log "Imagem inalterada (${target_image:7:12}); nada a recriar."
+# ---------------------------------------------------------------------------
+# 2. Resolve a versao que sera registrada e exibida pela aplicacao
+# ---------------------------------------------------------------------------
+version="$(docker image inspect --format '{{ index .Config.Labels "org.opencontainers.image.version" }}' "$IMAGE_REF" 2>/dev/null || true)"
+case "$version" in
+    ""|"<no value>")
+        if [ "$APP_TAG" != "latest" ]; then
+            version="$APP_TAG"
+        else
+            version="sha-${target_image:7:12}"
+        fi
+        ;;
+esac
+
+# Normaliza para o mesmo formato da tag Git (vX.Y.Z).
+case "$version" in
+    sha-*|v*) ;;
+    *) version="v$version" ;;
+esac
+
+if [ -n "$current_container" ] && [ "$before_image" = "$target_image" ] && [ "$before_version" = "$version" ]; then
+    log "Imagem e versao inalteradas (${target_image:7:12}, $version); nada a recriar."
 else
     if [ -z "$current_container" ]; then
         log "Container app ausente; subindo."
+    elif [ "$before_image" = "$target_image" ]; then
+        log "Versao montada divergente (${before_version:-desconhecida} -> $version); recriando app."
     else
         log "Nova imagem detectada (${before_image:7:12} -> ${target_image:7:12}); recriando app."
     fi
@@ -89,7 +113,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 2. Aguarda o healthcheck
+# 3. Aguarda o healthcheck
 # ---------------------------------------------------------------------------
 container="$(compose ps -q app 2>/dev/null || true)"
 if [ -n "$container" ]; then
@@ -117,26 +141,10 @@ if [ -n "$container" ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# 3. Registra a versao implantada
+# 4. Registra a versao implantada
 # ---------------------------------------------------------------------------
-version="$(docker image inspect --format '{{ index .Config.Labels "org.opencontainers.image.version" }}' "$IMAGE_REF" 2>/dev/null || true)"
-case "$version" in
-    ""|"<no value>")
-        if [ "$APP_TAG" != "latest" ]; then
-            version="$APP_TAG"
-        else
-            version="sha-${target_image:7:12}"
-        fi
-        ;;
-esac
-
-# Normaliza para o mesmo formato da tag Git (vX.Y.Z).
-case "$version" in
-    sha-*|v*) ;;
-    *) version="v$version" ;;
-esac
-
-printf '%s\n' "$version" > DEPLOYED_VERSION.tmp
-mv DEPLOYED_VERSION.tmp DEPLOYED_VERSION
+# O arquivo e bind-mounted individualmente; mantenha o inode para atualizar
+# o valor visivel no container sem precisar recria-lo novamente.
+printf '%s\n' "$version" > DEPLOYED_VERSION
 
 log "Deploy concluido. Versao implantada: $version (imagem ${target_image:7:12})"
