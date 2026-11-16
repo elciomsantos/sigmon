@@ -2,11 +2,12 @@ name: CI / Security Scan
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, 'fix/**']
   pull_request:
     branches: [main, develop]
   schedule:
     - cron: '0 6 * * 1'  # Semanal às segundas 06:00 UTC
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -66,6 +67,64 @@ jobs:
       - name: NPM Audit (all)
         run: npm audit --audit-level=moderate
         continue-on-error: true
+
+  tests:
+    name: Tests (PHPUnit + Vitest)
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: cftv_gml
+          MYSQL_USER: cftv_user
+          MYSQL_PASSWORD: cftv_pass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: '3306'
+      DB_NAME: cftv_gml
+      DB_USER: cftv_user
+      DB_PASS: cftv_pass
+      SIGMON_ENV: testing
+      APP_TIMEZONE: America/Sao_Paulo
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_mysql, mbstring, zip, gd, xml, curl, apcu
+          ini-values: memory_limit=256M
+          coverage: none
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit --do-not-cache-result
+
+      - name: Run Vitest
+        run: npm test
 
   trivy-fs:
     name: Trivy Filesystem Scan
@@ -197,7 +256,7 @@ jobs:
   security-summary:
     name: Security Summary
     runs-on: ubuntu-latest
-    needs: [php-deps, node-deps, docker-build, trivy-fs, trivy-image, hadolint]
+    needs: [php-deps, node-deps, tests, docker-build, trivy-fs, trivy-image, hadolint]
     if: always()
     steps:
       - name: Check job statuses
@@ -205,14 +264,16 @@ jobs:
           echo "=== Security Scan Summary ==="
           echo "PHP Deps: ${{ needs.php-deps.result }}"
           echo "Node Deps: ${{ needs.node-deps.result }}"
+          echo "Tests (PHPUnit + Vitest): ${{ needs.tests.result }}"
           echo "Docker Build (prod Nginx): ${{ needs.docker-build.result }}"
           echo "Trivy FS: ${{ needs.trivy-fs.result }} (non-blocking)"
           echo "Trivy Image: ${{ needs.trivy-image.result }} (non-blocking)"
           echo "Hadolint: ${{ needs.hadolint.result }}"
           
-          # Only block on php-deps, node-deps, docker-build, hadolint (trivy is informational)
+          # Only block on php-deps, node-deps, tests, docker-build, hadolint (trivy is informational)
           if [[ "${{ needs.php-deps.result }}" != "success" ]] || \
              [[ "${{ needs.node-deps.result }}" != "success" ]] || \
+             [[ "${{ needs.tests.result }}" != "success" ]] || \
              [[ "${{ needs.docker-build.result }}" != "success" ]] || \
              [[ "${{ needs.hadolint.result }}" != "success" ]]; then
             echo "::error::Blocking security checks failed"
