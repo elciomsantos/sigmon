@@ -29,7 +29,8 @@ try {
         $params[] = $tipoLocalId;
     }
 
-    if ($nivel !== 'admin' && $secretariaId !== null) {
+    // Supervisor e admin consultam locais de todas as secretarias; apenas usuário comum é restrito à sua.
+    if ($nivel === 'user' && $secretariaId !== null) {
         $where[] = 'l.secretaria_id = ?';
         $params[] = $secretariaId;
     }

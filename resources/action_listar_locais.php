@@ -35,7 +35,8 @@ if (!empty($_POST['filters'])) {
 }
 $usuarioSecretariaId = getUsuarioSecretariaId();
 $nivel = resolveUserAccessLevel($_SESSION['usuario'] ?? null);
-if ($nivel !== 'admin' && $usuarioSecretariaId !== null) {
+// Supervisor e admin exportam locais de todas as secretarias; apenas usuário comum é restrito à sua.
+if ($nivel === 'user' && $usuarioSecretariaId !== null) {
     $filters['secretaria_id'] = $usuarioSecretariaId;
 }
 

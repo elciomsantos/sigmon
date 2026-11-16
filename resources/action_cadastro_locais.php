@@ -37,7 +37,8 @@ $secretaria_id = $v->get('secretaria_id');
 
 $usuarioSecretariaId = getUsuarioSecretariaId();
 $nivel = resolveUserAccessLevel($_SESSION['usuario'] ?? null);
-if ($nivel !== 'admin' && $usuarioSecretariaId !== null) {
+// Apenas usuário comum tem a secretaria forçada; supervisor e admin podem cadastrar para qualquer secretaria.
+if ($nivel === 'user' && $usuarioSecretariaId !== null) {
     $secretaria_id = (string)$usuarioSecretariaId;
 }
 $regiao_id = $v->get('regiao_id');

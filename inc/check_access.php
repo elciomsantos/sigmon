@@ -44,7 +44,10 @@ function verificarEscopoLocal(int $localId): bool
     }
 
     $nivel = resolveUserAccessLevel($usuario);
-    if ($nivel === 'admin') {
+    // Admin: acesso global a todos locais
+    // Supervisor: acesso global a todos locais (por regra de negócio: pode gerenciar múltiplas secretarias)
+    // Usuário comum: escopo restrito à sua secretaria
+    if (in_array($nivel, ['admin', 'supervisor'], true)) {
         return true;
     }
 
