@@ -339,8 +339,17 @@ class EditarCamera {
                 body: JSON.stringify(formData),
             });
 
-            if (!response.ok) throw new Error('Falha ao atualizar camera.');
-            const resultado = await response.json();
+            const resultado = await response.json().catch(() => null);
+
+            if (!response.ok || !resultado || resultado.success !== true) {
+                const mensagem = resultado?.message || `Erro HTTP: ${response.status}`;
+                if (typeof window.showErrorModal === 'function') {
+                    window.showErrorModal('Não foi possível atualizar a câmera', mensagem);
+                } else {
+                    window.showToast(mensagem, 'danger');
+                }
+                return;
+            }
 
             if (resultado.success === true) {
                 window.showToast(resultado.data?.message || resultado.message, 'success');
@@ -357,9 +366,6 @@ class EditarCamera {
                     firstField.focus();
                     firstField.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
-
-            } else {
-                window.showToast(resultado.message || "Erro ao editar câmera", "danger");
             }
         } catch (error) {
             handleApiError(error, 'Erro de conexão com o servidor.');
