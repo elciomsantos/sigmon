@@ -75,6 +75,15 @@ describe('HomeDashboard refresh', () => {
     const dashboard = (window as any).homeDashboard;
     await vi.waitFor(() => expect(dashboard.data).not.toBeNull());
 
+    const updateUISpy = vi.spyOn(dashboard, 'updateUI');
+    dashboard.fetchData = vi.fn().mockResolvedValue({
+      ...createPayload(5),
+      meta: { timestamp: 'later', request_id: 'different-request' },
+    });
+    await dashboard.loadData();
+    expect(updateUISpy).not.toHaveBeenCalled();
+    updateUISpy.mockRestore();
+
     const activities = document.getElementById('recent-activities-body')!;
     const originalRow = activities.querySelector('tbody tr');
     dashboard.animateCounter.mockClear();

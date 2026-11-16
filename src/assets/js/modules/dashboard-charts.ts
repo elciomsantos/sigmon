@@ -1,5 +1,6 @@
 class ChartManager {
     charts: Map<string, Chart> = new Map();
+    private chartSnapshots: Map<string, string | undefined> = new Map();
     centerTextPlugin = {
         id: 'centerText',
         beforeDraw(chart: Chart) {
@@ -35,18 +36,22 @@ class ChartManager {
         const plugins = (options.plugins || {}) as Record<string, unknown>;
         const hasCenterText = !!(plugins.centerText as any)?.text;
         const centerTextData = hasCenterText ? plugins.centerText : null;
+        const snapshot = JSON.stringify({ data, centerText: centerTextData });
         if (this.charts.has(canvasId)) {
             const existing = this.charts.get(canvasId)!;
             if (existing.canvas && existing.canvas.parentElement && document.getElementById(canvasId)) {
+                if (this.chartSnapshots.get(canvasId) === snapshot) return existing;
                 existing.data = data as any;
                 if (hasCenterText) {
                     (existing as any).$centerText = centerTextData;
                 }
                 existing.update('none');
+                this.chartSnapshots.set(canvasId, snapshot);
                 return existing;
             }
             existing.destroy();
             this.charts.delete(canvasId);
+            this.chartSnapshots.delete(canvasId);
         }
         const { centerText: _, ...restPlugins } = plugins as any;
         const defaultOptions: Record<string, unknown> = {
@@ -69,7 +74,14 @@ class ChartManager {
         const chartConfig: any = {
             type,
             data,
-            options: { ...defaultOptions, ...options },
+            options: {
+                ...defaultOptions,
+                ...options,
+                plugins: {
+                    ...(defaultOptions.plugins as Record<string, unknown>),
+                    ...plugins
+                }
+            },
             plugins: chartPlugins
         };
         if (hasCenterText) {
@@ -80,6 +92,7 @@ class ChartManager {
             (chart as any).$centerText = centerTextData;
         }
         this.charts.set(canvasId, chart);
+        this.chartSnapshots.set(canvasId, snapshot);
         return chart;
     }
 
@@ -181,6 +194,7 @@ class ChartManager {
             if (this.charts.has('alarmChart')) {
                 this.charts.get('alarmChart')!.destroy();
                 this.charts.delete('alarmChart');
+                this.chartSnapshots.delete('alarmChart');
             }
             const emptyCanvas = document.getElementById('alarmChart');
             if (emptyCanvas) {

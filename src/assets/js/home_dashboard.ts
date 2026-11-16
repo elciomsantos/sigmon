@@ -2,6 +2,7 @@ class HomeDashboard extends (window.DashboardCore as any) {
     chartManager: any;
     _loading = false;
     private _listenersAbort: AbortController | null = null;
+    private _dashboardSnapshot: string | null = null;
     private _recentActivitiesSnapshot: string | null = null;
 
     constructor() {
@@ -33,7 +34,12 @@ class HomeDashboard extends (window.DashboardCore as any) {
             const endpoint = `${this.getApiBase()}api_dashboard`;
             const payload = await this.fetchData(endpoint) as ApiResponse<Record<string, unknown>>;
             this.data = payload && payload.success ? payload : null;
-            this.updateUI();
+            const data = this.data ? (this.data as any).data || this.data : null;
+            const snapshot = data === null ? null : JSON.stringify(data) ?? null;
+            if (snapshot !== this._dashboardSnapshot) {
+                this._dashboardSnapshot = snapshot;
+                this.updateUI();
+            }
         } catch (error) {
             console.error('Falha ao carregar dados:', error);
             if (typeof window.showToast === 'function') {

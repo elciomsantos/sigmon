@@ -73,22 +73,7 @@
 }
 
 .alert-urgente {
-    animation: pulse 2s infinite;
     border-left: 5px solid var(--danger-color);
-}
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4);
-    }
-
-    70% {
-        box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
-    }
 }
 
 .card-icon {
