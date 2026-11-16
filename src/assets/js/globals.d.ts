@@ -39,6 +39,7 @@ declare function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInit, 
 declare function showToast(message: string, type?: 'success' | 'danger' | 'warning' | 'info'): void;
 declare function showConfirm(title: string, htmlContent: string, confirmText?: string): Promise<boolean>;
 declare function showSuccessModal(title?: string, message?: string): void;
+declare function showErrorModal(title?: string, message?: string): void;
 declare function showMessage(type: string, text: string): void;
 declare function clearMessage(): void;
 declare function aplicarUppercaseUniversal(formOrSelector: string | Element | null): void;
@@ -87,6 +88,7 @@ interface Window {
   debounce: <T extends (...args: unknown[]) => unknown>(func: T, wait: number) => T & { cancel: () => void; flush: () => void };
   throttle: <T extends (...args: unknown[]) => unknown>(func: T, limit: number) => (...args: unknown[]) => void;
   showSuccessModal: (title?: string, message?: string) => void;
+  showErrorModal: (title?: string, message?: string) => void;
 
   // Shared maintenance utilities
   toBrDate: (value: unknown) => string;

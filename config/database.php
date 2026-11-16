@@ -68,7 +68,9 @@ class database implements \App\Database\DatabaseInterface
     private function ensureConnection(): void
     {
         $status = $this->pdo->getAttribute(\PDO::ATTR_CONNECTION_STATUS);
-        if ($status !== false && strpos($status, 'on ') === 0) {
+        // MySQL retorna "host via TCP/IP" (Postgres retorna "on <host>"),
+        // entao aceitamos os dois formatos para nao reconectar a cada query.
+        if ($status !== false && (strpos($status, 'on ') === 0 || strpos($status, ' via ') !== false)) {
             return;
         }
         if ($this->reconnectAttempts < self::MAX_RECONNECT_ATTEMPTS && !$this->inTransaction) {

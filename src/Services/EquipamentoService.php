@@ -7,7 +7,6 @@ namespace App\Services;
 use App\Exception\ServiceException;
 use App\Services\Concerns\ParsesInput;
 use Exception;
-use RuntimeException;
 use Throwable;
 
 class EquipamentoService
@@ -157,7 +156,7 @@ class EquipamentoService
             }
         }
         if (!empty($missing)) {
-            throw new RuntimeException('Campos obrigatórios faltando ou inválidos: ' . implode(', ', $missing));
+            throw ServiceException::validation('Campos obrigatórios faltando ou inválidos: ' . implode(', ', $missing));
         }
     }
 
@@ -236,7 +235,7 @@ class EquipamentoService
         if ($localId !== null) {
             $checkLocal = $this->db->query("SELECT id FROM locais WHERE id = ? LIMIT 1", [$localId]);
             if ($checkLocal['status'] !== 'success' || empty($checkLocal['data'])) {
-                throw new Exception('Local selecionado não encontrado.');
+                throw new ServiceException('NOT_FOUND', 'Local selecionado não encontrado.');
             }
             return $localId;
         }
@@ -258,7 +257,7 @@ class EquipamentoService
     {
         $checkLocal = $this->db->query("SELECT id FROM locais WHERE id = ? LIMIT 1", [$localId]);
         if ($checkLocal['status'] !== 'success' || empty($checkLocal['data'])) {
-            throw new Exception('Local selecionado não encontrado.');
+            throw new ServiceException('NOT_FOUND', 'Local selecionado não encontrado.');
         }
         return $localId;
     }
@@ -292,14 +291,14 @@ class EquipamentoService
 
         if (!empty($fields['tem_alarme'])) {
             if (empty($fields['alarme_conta'])) {
-                throw new Exception('Informe a conta do alarme.');
+                throw ServiceException::validation('Informe a conta do alarme.');
             }
             $checkConta = $this->db->query(
                 "SELECT conta FROM central_alarmes WHERE conta = ? LIMIT 1",
                 [$fields['alarme_conta']]
             );
             if ($checkConta['status'] !== 'success' || empty($checkConta['data'])) {
-                throw new Exception('Conta do alarme informada não encontrada na central de alarmes.');
+                throw ServiceException::validation('Conta de Alarme não encontrada!');
             }
         }
 
@@ -337,7 +336,7 @@ class EquipamentoService
                 [$modeloId, $marcaId, $tipoId]
             );
             if ($check['status'] !== 'success' || empty($check['data'])) {
-                throw new Exception('Modelo selecionado não pertence à marca/tipo informados.');
+                throw ServiceException::validation('Modelo selecionado não pertence à marca/tipo informados.');
             }
             return $modeloId;
         }
@@ -345,7 +344,7 @@ class EquipamentoService
         if (!empty($data['novo_modelo_nome'])) {
             $novoModelo = strtoupper(trim($data['novo_modelo_nome']));
             if (strlen($novoModelo) < 2) {
-                throw new Exception('Nome do modelo deve ter pelo menos 2 caracteres.');
+                throw ServiceException::validation('Nome do modelo deve ter pelo menos 2 caracteres.');
             }
 
             $check = $this->db->query(
@@ -375,23 +374,23 @@ class EquipamentoService
             return (int)$this->db->lastInsertId();
         }
 
-        throw new Exception('Informe ou selecione um modelo.');
+        throw ServiceException::validation('Informe ou selecione um modelo.');
     }
 
     public function validateCoordenadas(?string $coordenadas): void
     {
         if ($coordenadas !== null && !preg_match('/^[+-]?\d+(?:\.\d+)?\s*,\s*[+-]?\d+(?:\.\d+)?$/', $coordenadas)) {
-            throw new Exception('Coordenadas inválidas. Use formato: latitude, longitude.');
+            throw ServiceException::validation('Coordenadas inválidas. Use formato: latitude, longitude.');
         }
     }
 
     public function validateTipoSpecific(int $tipoId, ?string $dvrModelo, ?int $totemQuantidadeCameras): void
     {
         if ($tipoId === 3 && empty($dvrModelo)) {
-            throw new Exception('Informe o modelo do DVR.');
+            throw ServiceException::validation('Informe o modelo do DVR.');
         }
         if ($tipoId === 4 && empty($totemQuantidadeCameras)) {
-            throw new Exception('Informe a quantidade de câmeras do Totem.');
+            throw ServiceException::validation('Informe a quantidade de câmeras do Totem.');
         }
     }
 

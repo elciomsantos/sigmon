@@ -22,6 +22,7 @@ import './utils/ui/ErrorHandler';
 import './utils/ui/LoadingManager';
 import './utils/ui/theme-manager';
 import './utils/showSuccessModal';
+import './utils/showErrorModal';
 
 // Dashboard modules
 import './modules/dashboard-charts';
