@@ -2,6 +2,7 @@ class HomeDashboard extends (window.DashboardCore as any) {
     chartManager: any;
     _loading = false;
     private _listenersAbort: AbortController | null = null;
+    private _recentActivitiesSnapshot: string | null = null;
 
     constructor() {
         super();
@@ -25,19 +26,10 @@ class HomeDashboard extends (window.DashboardCore as any) {
         }
     }
 
-    setLoading(loading: boolean) {
-        const cards = document.querySelectorAll('.stat-card');
-        cards.forEach(card => {
-            card.classList.toggle('is-loading', loading);
-        });
-    }
-
     async loadData() {
         if (this._loading) return;
         this._loading = true;
-        const isInitialLoad = this.data === null;
         try {
-            if (!isInitialLoad) this.setLoading(true);
             const endpoint = `${this.getApiBase()}api_dashboard`;
             const payload = await this.fetchData(endpoint) as ApiResponse<Record<string, unknown>>;
             this.data = payload && payload.success ? payload : null;
@@ -49,8 +41,13 @@ class HomeDashboard extends (window.DashboardCore as any) {
             }
         } finally {
             this._loading = false;
-            this.setLoading(false);
         }
+    }
+
+    private updateCounter(element: HTMLElement, value: unknown) {
+        const end = Number(value) || 0;
+        const start = Number(element.textContent) || 0;
+        if (start !== end) this.animateCounter(element, start, end, 300);
     }
 
     updateUI() {
@@ -60,27 +57,27 @@ class HomeDashboard extends (window.DashboardCore as any) {
 
         const totalEl = document.getElementById('total-cameras');
         if (totalEl && stats.total !== undefined) {
-            this.animateCounter(totalEl, 0, Number(stats.total) || 0, 1000);
+            this.updateCounter(totalEl, stats.total);
         }
 
         const activeEl = document.getElementById('active-cameras');
         if (activeEl && stats.ativas !== undefined) {
-            this.animateCounter(activeEl, 0, Number(stats.ativas) || 0, 1000);
+            this.updateCounter(activeEl, stats.ativas);
         }
 
         const manutencaoEl = document.getElementById('manutencao-cameras');
         if (manutencaoEl && stats.manutencao !== undefined) {
-            this.animateCounter(manutencaoEl, 0, Number(stats.manutencao) || 0, 1000);
+            this.updateCounter(manutencaoEl, stats.manutencao);
         }
 
         const desativadasEl = document.getElementById('desativadas-cameras');
         if (desativadasEl && stats.desativadas !== undefined) {
-            this.animateCounter(desativadasEl, 0, Number(stats.desativadas) || 0, 1000);
+            this.updateCounter(desativadasEl, stats.desativadas);
         }
 
         const alertsEl = document.getElementById('alerts-count');
         if (alertsEl && stats.atrasada !== undefined) {
-            this.animateCounter(alertsEl, 0, Number(stats.atrasada) || 0, 1000);
+            this.updateCounter(alertsEl, stats.atrasada);
         }
 
         const uptime = Number(stats.uptime) || 0;
@@ -137,6 +134,10 @@ class HomeDashboard extends (window.DashboardCore as any) {
     renderRecentActivities(manutencoes: Array<Record<string, unknown>> | null | undefined) {
         const container = document.getElementById('recent-activities-body');
         if (!container) return;
+
+        const snapshot = JSON.stringify(manutencoes ?? []);
+        if (snapshot === this._recentActivitiesSnapshot) return;
+        this._recentActivitiesSnapshot = snapshot;
 
         if (!manutencoes || manutencoes.length === 0) {
             container.innerHTML = `

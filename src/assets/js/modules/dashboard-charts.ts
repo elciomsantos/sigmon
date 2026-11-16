@@ -42,7 +42,7 @@ class ChartManager {
                 if (hasCenterText) {
                     (existing as any).$centerText = centerTextData;
                 }
-                existing.update();
+                existing.update('none');
                 return existing;
             }
             existing.destroy();
