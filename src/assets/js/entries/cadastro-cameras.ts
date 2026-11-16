@@ -5,4 +5,5 @@ import '../utils/ui-utils';
 import '../utils/file-upload';
 import '../utils/uppercase';
 import '../utils/showSuccessModal';
+import '../utils/showErrorModal';
 import '../cadastro_cameras';

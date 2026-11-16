@@ -672,11 +672,21 @@ class CadastroCamera {
                 body: JSON.stringify(formData),
             });
 
-            if (!response.ok) {
-                throw new Error('Erro HTTP: ' + response.status);
-            }
+            const resultado = await response.json().catch(() => null);
 
-            const resultado = await response.json();
+            if (!response.ok || !resultado || resultado.success !== true) {
+                const mensagem = resultado?.message || `Erro HTTP: ${response.status}`;
+                if (typeof window.showErrorModal === 'function') {
+                    window.showErrorModal('Não foi possível cadastrar a câmera', mensagem);
+                } else {
+                    window.showToast(mensagem, 'danger');
+                }
+
+                if (resultado?.data?.resource?.input) {
+                    this.preencherFormulario(resultado.data.resource.input);
+                }
+                return;
+            }
 
             if (resultado.success === true) {
                 this.savedEquipmentId = resultado.data?.resource?.camera_id || null;
@@ -708,13 +718,6 @@ class CadastroCamera {
 
                 if (this.btnFinalizar) {
                     this.btnFinalizar.classList.remove('d-none');
-                }
-
-            } else {
-                window.showToast(resultado.message || "Erro ao cadastrar câmera", "danger");
-
-                if (resultado.data?.resource?.input) {
-                    this.preencherFormulario(resultado.data.resource.input);
                 }
             }
         } catch (error) {

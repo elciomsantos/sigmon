@@ -22,8 +22,10 @@ LABEL org.opencontainers.image.licenses="MIT"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+# apt-get upgrade aplica atualizacoes de seguranca dos pacotes ja presentes na
+# imagem base (ex.: linux-libc-dev), evitando CVEs abertos no Trivy image scan.
 # hadolint ignore=DL3008
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         git zip unzip curl libpng-dev libzip-dev libonig-dev \
         libxml2-dev libcurl4-openssl-dev pkg-config libssl-dev \
         locales \
