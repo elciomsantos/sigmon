@@ -14,6 +14,7 @@ fix/dev-development --(PR)--> main --(GitHub Actions)--> tag vX.Y.Z + imagem GHC
 
 - **O servidor faz deploy somente a partir da `main`.**
 - A `main` é a única origem de deploy: commits entram por Pull Request.
+- A CI roda nos pushes para `develop` e `fix/dev-development` e nas PRs; não é repetida no push de merge para `main`.
 - O build da imagem acontece **no GitHub Actions**, nunca no servidor.
 - Não há timer/systemd: a atualização é executada manualmente no terminal.
 - Cada atualização grava a versão efetivamente implantada em `DEPLOYED_VERSION`.

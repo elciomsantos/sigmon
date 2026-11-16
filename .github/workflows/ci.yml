@@ -2,7 +2,7 @@ name: CI / Security Scan
 
 on:
   push:
-    branches: [main, develop, fix/dev-development]
+    branches: [develop, fix/dev-development]
   pull_request:
     branches: [main, develop, fix/dev-development]
   schedule:
@@ -220,7 +220,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [php-deps, node-deps, docker-build]
     if: >-
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
       (github.event_name == 'push' && github.ref == 'refs/heads/fix/dev-development') ||
       (github.event_name == 'pull_request' && github.base_ref == 'main') ||
       github.event_name == 'schedule' ||
