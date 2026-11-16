@@ -56,7 +56,7 @@ export default {
           ],
         },
       }),
-      cssnano({ preset: 'default' }),
+      cssnano({ preset: ['default', { svgo: false }] }),
     ] : []),
   ],
 };

@@ -29,11 +29,6 @@
     transition: opacity 0.3s ease;
 }
 
-.stat-card.is-loading {
-    opacity: 0.5;
-    pointer-events: none;
-}
-
 .stat-card.bg-primary {
     border-left-color: #2980b9;
     background: linear-gradient(135deg, #3498db, #2980b9);
