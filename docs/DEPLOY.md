@@ -101,6 +101,16 @@ docker compose -f docker-compose.prod.yml up -d
 
 Acesse `https://<servidor>/` (aceite o certificado na primeira vez).
 
+> **Erro `ERROR 1418 (HY000)` ao importar `cftv_gml.sql`:** a função
+> `proximo_codigo_equipamento()` é `NOT DETERMINISTIC` / `MODIFIES SQL DATA`.
+> Com binary log ativado (padrão no MySQL 8.4), o servidor recusa criá-la a
+> menos que `log_bin_trust_function_creators=1`. O `docker-compose.prod.yml`
+> já passa essa flag. Se você importar o SQL com um script próprio ou outro
+> servidor MySQL, adicione a opção ao servidor (ou `SET GLOBAL
+> log_bin_trust_function_creators = 1;` como root antes da importação) e
+> reimporte o schema **do zero** — a importação interrompida deixa triggers,
+> procedures e eventos faltando.
+
 ## Testar manualmente
 
 ```bash
