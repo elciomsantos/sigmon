@@ -74,6 +74,18 @@ composer install
 npm install
 ```
 
+### Docker (desenvolvimento)
+
+```bash
+docker compose up -d
+docker compose logs -f app
+docker compose down
+```
+
+Acesse `http://localhost:5000/`. O Apache roda em `network_mode: host` na porta
+5000; o MySQL sobe junto na porta 3306. Para usar o Vite dev server
+(`npm run dev`, porta 3000), o proxy `/api` já aponta para essa mesma porta 5000.
+
 ### 2. Configurar ambiente
 
 O sistema carrega configurações de uma pasta externa por segurança:
@@ -147,7 +159,7 @@ SIGMON_SESSION_ABSOLUTE_TIMEOUT=28800
 SIGMON_CSP_ALLOW_INLINE_STYLES=0
 
 # Vite Dev Server: URL base da API para o proxy
-VITE_API_URL=http://localhost:80
+VITE_API_URL=http://localhost:5000
 ```
 
 > **Compatibilidade:** o prefixo `SIGMON_*` substitui o antigo `CAMERAS_*`, e o

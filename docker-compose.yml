@@ -8,6 +8,8 @@
 #  docker compose up -d
 #  docker compose logs -f app
 #  docker compose down
+#
+# Acesso: http://localhost:5000/ (Apache do stage dev em network_mode: host)
 #============================================
 name: sigmon
 
@@ -26,6 +28,14 @@ services:
       - mysql_data:/var/lib/mysql
       - ./config/DB/cftv_gml.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
       - ./config/DB/private/seed_dev.sql:/docker-entrypoint-initdb.d/02-seed-dev.sql:ro
+      # Dados proprietarios de Londrina (arquivo local, gitignored).
+      # Necessario em dev: copie o arquivo antes de `docker compose up`.
+      - type: bind
+        source: ./config/DB/private/proprios-pml.sql
+        target: /docker-entrypoint-initdb.d/03-proprios-pml.sql
+        read_only: true
+        bind:
+          create_host_path: false
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
       interval: 10s

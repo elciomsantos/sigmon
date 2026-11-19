@@ -84,6 +84,16 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
 #============================================
 FROM base AS dev
 
+# Em dev o Apache escuta na 5000 (compose usa network_mode: host).
+# O stage base/prod continua na 80 — a mudanca e exclusiva deste stage.
+RUN sed -i 's/Listen 80/Listen 5000/' /etc/apache2/ports.conf \
+    && sed -i 's/<VirtualHost \*:80>/<VirtualHost *:5000>/' /etc/apache2/sites-available/cameras.conf
+
+EXPOSE 5000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+    CMD curl -sf http://localhost:5000/ || exit 1
+
 # xdebug para depuracao em desenvolvimento (opcional, nao-fatal)
 RUN pecl install xdebug 2>/dev/null \
     && docker-php-ext-enable xdebug 2>/dev/null \
