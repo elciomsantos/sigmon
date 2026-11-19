@@ -118,9 +118,8 @@
 .user-welcome-logo {
     display: block;
     max-width: 100%;
-    height: 56px;
+    height: 88px;
     width: auto;
-    margin-bottom: 0.25rem;
 }
 
 .user-welcome .badge {
@@ -186,7 +185,7 @@
     }
 
     .user-welcome-logo {
-        height: 40px;
+        height: 56px;
     }
 
     .stat-card h3 {

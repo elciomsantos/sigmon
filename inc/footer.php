@@ -14,7 +14,7 @@
         <span class="text-muted">
             <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/logo_sigmon.png"
                  alt="SIGMON" class="footer-logo">
-            Sistema de Gerenciamento de Cameras e Alarmes &copy; <?php echo date('Y'); ?> -
+            Sistema Integrado de Gestão e Monitoramento &copy; <?php echo date('Y'); ?> -
             <span class="developer-name">Beta +</span>
         </span>
     </div>
