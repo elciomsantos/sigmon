@@ -1,7 +1,4 @@
-<?php if (($CURRENT_PAGE ?? '') === 'login') {
-    return;
-}
-
+<?php
 // Versao de deploy: variavel de ambiente tem prioridade sobre o arquivo VERSION.
 $versaoDeploy = getenv('APP_VERSION');
 if ($versaoDeploy === false || trim((string) $versaoDeploy) === '') {

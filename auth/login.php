@@ -9,44 +9,44 @@ unset($_SESSION['error']);
 
 <style nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
 .page-login {
+    --footer-space: 60px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
     min-height: 100vh;
     padding: 20mm 24px 30mm;
-    background: url('<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/tela_fundo.png') no-repeat right 20mm top 22mm fixed;
-    background-color: #0f1e2f;
-    background-size: min(144px, 12.8vw) auto;
-    box-shadow:
-        inset 0 0 120px rgba(0, 0, 0, 0.6),
-        inset 0 0 0 6px rgba(255, 255, 255, 0.08);
+    background-color: #ffffff;
 }
 
 .page-login .login-wrapper {
     width: min(720px, 100%);
-    min-height: calc(100vh - 50mm);
+    min-height: calc(100vh - 50mm - var(--footer-space));
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 24px;
 }
 
+.page-login footer.footer {
+    align-self: stretch;
+}
+
 .page-login .login-card {
     width: min(420px, 100%);
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
     color: #132238;
     padding: 32px 28px;
 }
 
 .page-login .login-logo {
     display: block;
-    width: 220px;
+    width: 55px;
     max-width: 85%;
     height: auto;
     margin: 0 auto 20px;
@@ -80,7 +80,7 @@ unset($_SESSION['error']);
 
 <div class="login-wrapper">
     <div class="login-card">
-        <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/logo_sigmon.png"
+        <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/tela_fundo.png"
              alt="SIGMON" class="login-logo">
         <hr>
         <form action="?page=action_login_submit" method="post">
