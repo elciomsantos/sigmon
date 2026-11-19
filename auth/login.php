@@ -37,11 +37,12 @@ unset($_SESSION['error']);
     padding: 32px 28px;
 }
 
-.page-login .login-title {
-    font-weight: 600;
-    text-align: center;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
+.page-login .login-logo {
+    display: block;
+    width: 220px;
+    max-width: 85%;
+    height: auto;
+    margin: 0 auto 20px;
 }
 
 .page-login .login-input {
@@ -64,7 +65,8 @@ unset($_SESSION['error']);
 
 <div class="login-wrapper">
     <div class="login-card">
-        <h3 class="login-title">Login</h3>
+        <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/logo_sigmon.png"
+             alt="SIGMON" class="login-logo">
         <hr>
         <form action="?page=action_login_submit" method="post">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken(), ENT_QUOTES, 'UTF-8') ?>">
