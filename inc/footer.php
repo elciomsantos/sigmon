@@ -1,6 +1,16 @@
 <?php if (($CURRENT_PAGE ?? '') === 'login') {
     return;
-} ?>
+}
+
+// Versao de deploy: variavel de ambiente tem prioridade sobre o arquivo VERSION.
+$versaoDeploy = getenv('APP_VERSION');
+if ($versaoDeploy === false || trim((string) $versaoDeploy) === '') {
+    $arquivoVersao = dirname(__DIR__) . '/VERSION';
+    $versaoDeploy = is_file($arquivoVersao)
+        ? trim((string) file_get_contents($arquivoVersao))
+        : 'dev';
+}
+?>
 <style nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
 .footer .footer-logo {
     height: 28px;
@@ -16,6 +26,7 @@
                  alt="SIGMON" class="footer-logo">
             Sistema Integrado de Gestão e Monitoramento &copy; <?php echo date('Y'); ?> -
             <span class="developer-name">Beta +</span>
+            <span class="badge bg-secondary ms-2">Vers&atilde;o <?= htmlspecialchars((string) $versaoDeploy, ENT_QUOTES, 'UTF-8') ?></span>
         </span>
     </div>
 </footer>

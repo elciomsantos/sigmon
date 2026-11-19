@@ -13,7 +13,7 @@ unset($_SESSION['error']);
     justify-content: flex-start;
     align-items: center;
     min-height: 100vh;
-    padding: 20mm 24px 24px;
+    padding: 20mm 24px 30mm;
     background: url('<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/tela_fundo.png') no-repeat right 20mm top 22mm fixed;
     background-color: #0f1e2f;
     background-size: min(144px, 12.8vw) auto;
@@ -23,10 +23,17 @@ unset($_SESSION['error']);
 }
 
 .page-login .login-wrapper {
-    width: min(420px, 100%);
+    width: min(720px, 100%);
+    min-height: calc(100vh - 50mm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
 }
 
 .page-login .login-card {
+    width: min(420px, 100%);
+    margin: 0 auto;
     background: rgba(255, 255, 255, 0.18);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
@@ -48,8 +55,9 @@ unset($_SESSION['error']);
 .page-login .login-banner {
     display: block;
     width: 100%;
+    max-width: 720px;
     height: auto;
-    margin-top: 16px;
+    margin: 0 auto;
 }
 
 .page-login .login-input {

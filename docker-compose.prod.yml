@@ -76,6 +76,8 @@ services:
       DB_USER: ${DB_USER:-cftv_user}
       DB_PASS: ${DB_PASS:?DB_PASS required}
       APP_TIMEZONE: America/Sao_Paulo
+      # Tag exibida no rodape. Usa APP_VERSION do .env ou a tag da imagem (APP_TAG).
+      APP_VERSION: ${APP_VERSION:-${APP_TAG:-latest}}
       SIGMON_SESSION_TIMEOUT: 3600
       SIGMON_SESSION_ABSOLUTE_TIMEOUT: 28800
       SIGMON_CSP_ALLOW_INLINE_STYLES: 0
