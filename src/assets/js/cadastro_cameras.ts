@@ -559,6 +559,10 @@ class CadastroCamera {
             return;
         }
 
+        if (!this.validateAlarmeContaField()) {
+            return;
+        }
+
         const formData = this.prepareFormData();
 
         if (!this.validateModelo(formData)) {
@@ -581,6 +585,38 @@ class CadastroCamera {
         });
 
         return isValid;
+    }
+
+    private validateAlarmeContaField(): boolean {
+        const checkbox = document.getElementById('temAlarme') as HTMLInputElement | null;
+        if (!checkbox?.checked) {
+            return true;
+        }
+
+        const input = document.getElementById('alarmeConta') as HTMLInputElement | null;
+        const conta = (input?.value ?? '').trim();
+
+        if (conta === '') {
+            this.showAlarmeError('Informe a conta do alarme.');
+            input?.focus();
+            return false;
+        }
+
+        if (!/^\d+$/.test(conta)) {
+            this.showAlarmeError('Conta de alarme inexistente. Informe apenas números.');
+            input?.focus();
+            return false;
+        }
+
+        return true;
+    }
+
+    private showAlarmeError(mensagem: string): void {
+        if (typeof window.showErrorModal === 'function') {
+            window.showErrorModal('Conta de alarme inexistente', mensagem);
+        } else if (typeof window.showToast === 'function') {
+            window.showToast(mensagem, 'danger');
+        }
     }
 
     prepareFormData(): Record<string, unknown> {
@@ -676,8 +712,11 @@ class CadastroCamera {
 
             if (!response.ok || !resultado || resultado.success !== true) {
                 const mensagem = resultado?.message || `Erro HTTP: ${response.status}`;
+                const titulo = /alarme/i.test(mensagem)
+                    ? 'Conta de alarme inexistente'
+                    : 'Não foi possível cadastrar a câmera';
                 if (typeof window.showErrorModal === 'function') {
-                    window.showErrorModal('Não foi possível cadastrar a câmera', mensagem);
+                    window.showErrorModal(titulo, mensagem);
                 } else {
                     window.showToast(mensagem, 'danger');
                 }

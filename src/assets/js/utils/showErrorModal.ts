@@ -1,4 +1,64 @@
+/**
+ * Exibe um erro ao usuario mesmo quando o Bootstrap JS nao foi carregado.
+ * Usa elementos criados via DOM (textContent) para evitar injecao de HTML.
+ */
+function showFallbackErrorModal(title: string, message: string): void {
+    document.getElementById('modalErroSistemaFallback')?.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'modalErroSistemaFallback';
+    overlay.setAttribute('role', 'alertdialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.style.cssText =
+        'position:fixed;inset:0;z-index:20000;display:flex;align-items:center;' +
+        'justify-content:center;background:rgba(0,0,0,.45);padding:16px';
+
+    const box = document.createElement('div');
+    box.style.cssText =
+        'background:#fff;border-radius:10px;max-width:420px;width:100%;padding:22px;' +
+        'box-shadow:0 10px 40px rgba(0,0,0,.25);font-family:inherit';
+
+    const heading = document.createElement('h5');
+    heading.className = 'text-danger fw-bold mb-2';
+    heading.textContent = title;
+
+    const text = document.createElement('p');
+    text.className = 'text-dark mb-3';
+    text.textContent = message;
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'btn btn-danger';
+    button.textContent = 'OK';
+
+    const close = (): void => {
+        overlay.remove();
+        document.removeEventListener('keydown', onKeyDown);
+    };
+    const onKeyDown = (event: KeyboardEvent): void => {
+        if (event.key === 'Escape') {
+            close();
+        }
+    };
+
+    button.addEventListener('click', close);
+    overlay.addEventListener('click', (event: MouseEvent) => {
+        if (event.target === overlay) {
+            close();
+        }
+    });
+    document.addEventListener('keydown', onKeyDown);
+
+    box.append(heading, text, button);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    button.focus();
+}
+
 function showErrorModal(title?: string, message?: string): void {
+    const titulo = title || 'Não foi possível concluir';
+    const mensagem = message || 'Ocorreu um erro inesperado.';
+
     try {
         let modalEl = document.getElementById('modalErroSistema');
         if (!modalEl) {
@@ -24,18 +84,23 @@ function showErrorModal(title?: string, message?: string): void {
 
         const titleEl = document.getElementById('erroModalTitle');
         const msgEl = document.getElementById('erroModalMessage');
-        if (titleEl) titleEl.textContent = title || 'Não foi possível concluir';
-        if (msgEl) msgEl.textContent = message || 'Ocorreu um erro inesperado.';
+        if (titleEl) titleEl.textContent = titulo;
+        if (msgEl) msgEl.textContent = mensagem;
 
         if (typeof window.bootstrap !== 'undefined' && window.bootstrap.Modal && modalEl) {
             const modal = window.bootstrap.Modal.getOrCreateInstance(modalEl);
             modal.show();
+            return;
         }
     } catch (e) {
         console.warn('showErrorModal fallback:', e);
-        if (typeof window.showToast === 'function') {
-            window.showToast(message || title || 'Ocorreu um erro inesperado.', 'danger');
-        }
+    }
+
+    // Sem Bootstrap (ou falha ao abrir o modal): nunca deixar o erro silencioso.
+    if (typeof window.showToast === 'function') {
+        window.showToast(mensagem, 'danger');
+    } else {
+        showFallbackErrorModal(titulo, mensagem);
     }
 }
 
