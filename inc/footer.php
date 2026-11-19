@@ -19,7 +19,7 @@ if ($versaoDeploy === false || trim((string) $versaoDeploy) === '') {
 <footer class="footer mt-auto py-3 bg-light">
     <div class="container text-center">
         <span class="text-muted">
-            <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/logo_sigmon.png"
+            <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/Logotipo.png"
                  alt="SIGMON" class="footer-logo">
             <span class="badge bg-secondary ms-2">Vers&atilde;o <?= htmlspecialchars((string) $versaoDeploy, ENT_QUOTES, 'UTF-8') ?></span>
         </span>
