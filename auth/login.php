@@ -15,7 +15,7 @@ unset($_SESSION['error']);
     align-items: center;
     min-height: 100vh;
     padding: 20mm 24px 30mm;
-    background-color: #ffffff;
+    background-color: #f8f9fa;
 }
 
 .page-login .login-wrapper {

@@ -21,8 +21,6 @@ if ($versaoDeploy === false || trim((string) $versaoDeploy) === '') {
         <span class="text-muted">
             <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/logo_sigmon.png"
                  alt="SIGMON" class="footer-logo">
-            Sistema Integrado de Gestão e Monitoramento &copy; <?php echo date('Y'); ?> -
-            <span class="developer-name">Beta +</span>
             <span class="badge bg-secondary ms-2">Vers&atilde;o <?= htmlspecialchars((string) $versaoDeploy, ENT_QUOTES, 'UTF-8') ?></span>
         </span>
     </div>
