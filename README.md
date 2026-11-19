@@ -1,16 +1,4 @@
-<div align="center">
-  <img src="/public/images/corporativo.png" alt="Logo" width="300">
-
-  <h1>SIGAV — Sistema de Gestão e Compartilhamento de Vídeos</h1>
-
-  <p align="center">
-
-
-  </p>
-</div>
-
-
-# SIGMON — Sistema de Gerenciamento de Câmeras e Alarmes v1.0
+# SIGMON — Sistema Integrado de Gestão e Monitoramento
 
 Sistema web para gerenciamento centralizado de câmeras de segurança e centrais de alarme em ambientes empresariais. Controle de equipamentos, manutenções, relatórios e geolocalização com autenticação hierárquica e API REST.
 
