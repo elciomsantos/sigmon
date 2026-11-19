@@ -1,4 +1,4 @@
-# SIGMON — Sistema de Gerenciamento de Câmeras e Alarmes v1.0
+# SIGMON — Sistema Integrado de Gestão e Monitoramento
 
 Sistema web para gerenciamento centralizado de câmeras de segurança e centrais de alarme em ambientes empresariais. Controle de equipamentos, manutenções, relatórios e geolocalização com autenticação hierárquica e API REST.
 
