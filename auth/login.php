@@ -9,18 +9,19 @@ unset($_SESSION['error']);
 
 <style nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
 .page-login {
-    --footer-space: 60px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    min-height: 100vh;
-    padding: 20mm 24px 30mm;
+    height: 100vh;
+    overflow: hidden;
+    padding: 20mm 24px 8mm;
     background-color: #f8f9fa;
 }
 
 .page-login .login-wrapper {
-    width: min(720px, 100%);
-    min-height: calc(100vh - 50mm - var(--footer-space));
+    width: min(860px, 100%);
+    flex: 1 1 auto;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -28,18 +29,21 @@ unset($_SESSION['error']);
 }
 
 .page-login footer.footer {
+    flex: 0 0 auto;
     align-self: stretch;
+    margin-top: 45mm;
+    border-top: none;
 }
 
 .page-login .login-card {
     width: min(420px, 100%);
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(233, 236, 239, 0.95);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-radius: 16px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22), 0 4px 12px rgba(0, 0, 0, 0.10);
     color: #132238;
     padding: 32px 28px;
 }
@@ -55,8 +59,10 @@ unset($_SESSION['error']);
 .page-login .login-banner {
     display: block;
     width: 100%;
-    max-width: 720px;
+    max-width: 860px;
+    min-height: 0;
     height: auto;
+    object-fit: contain;
     margin: 0 auto;
 }
 
@@ -75,6 +81,20 @@ unset($_SESSION['error']);
 
 .page-login .login-btn:hover {
     background-color: #152a45;
+}
+
+@media (max-height: 800px) {
+    .page-login {
+        padding: 10mm 24px 8mm;
+    }
+
+    .page-login footer.footer {
+        margin-top: 25mm;
+    }
+
+    .page-login .login-banner {
+        max-height: 20vh;
+    }
 }
 </style>
 

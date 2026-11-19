@@ -998,8 +998,8 @@ html {
 }
 /* ===== FOOTER LOGO ===== */
 footer .footer-logo {
-  height: 56px !important;
-  max-height: 56px !important;
+  height: 28px !important;
+  max-height: 28px !important;
   width: auto !important;
   display: inline-block;
   vertical-align: middle;
