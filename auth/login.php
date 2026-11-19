@@ -10,13 +10,13 @@ unset($_SESSION['error']);
 <style nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
 .page-login {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     min-height: 100vh;
-    padding: 24px;
-    background: url('<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/tela_fundo.png') no-repeat center center fixed;
+    padding: 20mm 24px 24px;
+    background: url('<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/tela_fundo.png') no-repeat right 20mm top 22mm fixed;
     background-color: #0f1e2f;
-    background-size: min(720px, 85vw) auto;
+    background-size: min(144px, 12.8vw) auto;
     box-shadow:
         inset 0 0 120px rgba(0, 0, 0, 0.6),
         inset 0 0 0 6px rgba(255, 255, 255, 0.08);
@@ -43,6 +43,13 @@ unset($_SESSION['error']);
     max-width: 85%;
     height: auto;
     margin: 0 auto 20px;
+}
+
+.page-login .login-banner {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: 16px;
 }
 
 .page-login .login-input {
@@ -93,4 +100,6 @@ unset($_SESSION['error']);
             </small>
         </div>
     </div>
+    <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/Logo_banner_sigmon.png"
+         alt="SIGMON — Sistema Integrado de Gestão e Monitoramento" class="login-banner">
 </div>
