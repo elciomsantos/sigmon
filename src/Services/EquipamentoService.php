@@ -285,22 +285,38 @@ class EquipamentoService
         return (int)$this->db->lastInsertId();
     }
 
-    public function updateLocationFields(int $localId, array $data): void
+    /**
+     * Valida a conta de alarme informada antes de gravar em `locais`.
+     *
+     * Centralizado para cadastro e edicao de camera: sem essa checagem, um
+     * codigo inexistente viola a FK fk_locais_alarme_conta e o endpoint cai
+     * no catch generico, respondendo 500 sem mensagem util ao usuario.
+     */
+    public function validateAlarmeConta(array $data): void
     {
         $fields = $this->extractCommonData($data);
 
-        if (!empty($fields['tem_alarme'])) {
-            if (empty($fields['alarme_conta'])) {
-                throw ServiceException::validation('Informe a conta do alarme.');
-            }
-            $checkConta = $this->db->query(
-                "SELECT conta FROM central_alarmes WHERE conta = ? LIMIT 1",
-                [$fields['alarme_conta']]
-            );
-            if ($checkConta['status'] !== 'success' || empty($checkConta['data'])) {
-                throw ServiceException::validation('Conta de Alarme não encontrada!');
-            }
+        if (empty($fields['tem_alarme'])) {
+            return;
         }
+
+        if (empty($fields['alarme_conta'])) {
+            throw ServiceException::validation('Informe a conta do alarme.');
+        }
+
+        $checkConta = $this->db->query(
+            "SELECT conta FROM central_alarmes WHERE conta = ? AND deleted_at IS NULL LIMIT 1",
+            [$fields['alarme_conta']]
+        );
+        if ($checkConta['status'] !== 'success' || empty($checkConta['data'])) {
+            throw ServiceException::validation('Conta de alarme inexistente. Verifique o número informado.');
+        }
+    }
+
+    public function updateLocationFields(int $localId, array $data): void
+    {
+        $fields = $this->extractCommonData($data);
+        $this->validateAlarmeConta($data);
 
         $this->db->query(
             "UPDATE locais SET tem_alarme = ?, alarme_conta = ?, tem_camera = ?, logradouro = ?, bairro = ?, cidade = ?, uf = ?, cep = ?, numero = ?, descricao_posicao = ?, tipo_local_id = ?, classificacao_endereco_id = ?, regiao_id = ?, horario_funcionamento = ? WHERE id = ?",
