@@ -1,10 +1,20 @@
 <?php if (($CURRENT_PAGE ?? '') === 'login') {
     return;
 } ?>
+<style nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
+.footer .footer-logo {
+    height: 28px;
+    width: auto;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+</style>
 <footer class="footer mt-auto py-3 bg-light">
     <div class="container text-center">
         <span class="text-muted">
-            SIGMON — Sistema de Gerenciamento de Cameras e Alarmes &copy; <?php echo date('Y'); ?> -
+            <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/logo_sigmon.png"
+                 alt="SIGMON" class="footer-logo">
+            Sistema de Gerenciamento de Cameras e Alarmes &copy; <?php echo date('Y'); ?> -
             <span class="developer-name">Beta +</span>
         </span>
     </div>

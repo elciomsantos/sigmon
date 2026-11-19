@@ -1,7 +1,7 @@
 <?php use App\Services\NotificacaoService; ?>
 <style nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
 .navbar .navbar-logo {
-    height: 32px;
+    height: 40px;
     width: auto;
 }
 </style>

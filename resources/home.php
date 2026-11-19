@@ -10,7 +10,8 @@ requererAcesso('user');
     <div class="user-welcome">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h1><i class="fas fa-home me-2"></i>Dashboard do Sistema</h1>
+                <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/Logo_banner_sigmon.png"
+                     alt="SIGMON — Dashboard do Sistema" class="user-welcome-logo">
                 <p class="mb-0">Bem-vindo,
                     <strong><?= htmlspecialchars($_SESSION['usuario']->nome ?? 'Usuário', ENT_QUOTES, 'UTF-8') ?></strong>!
                 </p>
