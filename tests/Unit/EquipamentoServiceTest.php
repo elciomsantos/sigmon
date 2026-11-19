@@ -235,4 +235,38 @@ class EquipamentoServiceTest extends TestCase
         $this->assertEquals(1, $result['tem_alarme']);
         $this->assertEquals(0, $result['tem_camera']);
     }
+
+    public function testValidateAlarmeContaThrowsClearErrorForUnknownAccount(): void
+    {
+        $this->dbMock->method('query')->willReturn(['status' => 'success', 'data' => []]);
+        $svc = new \App\Services\EquipamentoService($this->dbMock);
+
+        $this->expectException(\App\Exception\ServiceException::class);
+        $this->expectExceptionMessage('Conta de alarme inexistente.');
+
+        $svc->validateAlarmeConta(['tem_alarme' => 1, 'alarme_conta' => 999999]);
+    }
+
+    public function testValidateAlarmeContaAcceptsExistingAccount(): void
+    {
+        $this->dbMock->method('query')->willReturn([
+            'status' => 'success',
+            'data' => [(object)['conta' => 123]],
+        ]);
+        $svc = new \App\Services\EquipamentoService($this->dbMock);
+
+        $svc->validateAlarmeConta(['tem_alarme' => 1, 'alarme_conta' => 123]);
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function testValidateAlarmeContaSkipsLookupWhenAlarmeIsUnchecked(): void
+    {
+        $this->dbMock->expects($this->never())->method('query');
+        $svc = new \App\Services\EquipamentoService($this->dbMock);
+
+        $svc->validateAlarmeConta(['tem_alarme' => 0, 'alarme_conta' => 999999]);
+
+        $this->addToAssertionCount(1);
+    }
 }

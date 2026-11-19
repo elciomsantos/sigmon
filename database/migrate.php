@@ -26,7 +26,7 @@ $pdo = $db->getConnection();
 ensureMigrationsTable($pdo);
 
 // --status
-$args = array_slice($argv, 1);
+$args = array_slice($_SERVER['argv'] ?? [], 1);
 if (in_array('--status', $args, true)) {
     $files = getMigrationFiles();
     $applied = getAppliedMigrations($pdo);
