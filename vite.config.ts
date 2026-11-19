@@ -71,7 +71,7 @@ export default defineConfig({
     cors: true,
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:80',
+        target: process.env.VITE_API_URL || 'http://localhost:5000',
         changeOrigin: true,
       },
     },

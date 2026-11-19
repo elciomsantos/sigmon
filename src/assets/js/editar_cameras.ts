@@ -1,6 +1,7 @@
 import { CLASSIFICACAO_MAP } from './utils/classificacao-endereco';
+import { limparContaInvalida, marcarContaInvalida, validarFormatoConta } from './utils/alarme-conta-field';
 
-class EditarCamera {
+export class EditarCamera {
     form!: HTMLFormElement;
     marcaSelect!: HTMLSelectElement;
     toggleModeloExistente!: HTMLInputElement;
@@ -237,6 +238,10 @@ class EditarCamera {
             return;
         }
 
+        if (!this.validateAlarmeContaField()) {
+            return;
+        }
+
         const formData = this.prepareFormData();
 
         if (!this.validateModelo(formData)) {
@@ -264,6 +269,42 @@ class EditarCamera {
         });
 
         return allValid;
+    }
+
+    private validateAlarmeContaField(): boolean {
+        const checkbox = document.getElementById('temAlarme') as HTMLInputElement | null;
+        if (!checkbox?.checked) {
+            return true;
+        }
+
+        const input = document.getElementById('alarmeConta') as HTMLInputElement | null;
+        if (!input) {
+            return true;
+        }
+
+        limparContaInvalida(input);
+        const mensagemErro = validarFormatoConta(input.value);
+
+        if (mensagemErro) {
+            this.setAlarmeContaError(input, mensagemErro);
+            return false;
+        }
+
+        return true;
+    }
+
+    private setAlarmeContaError(input: HTMLInputElement, mensagem: string): void {
+        marcarContaInvalida(input, mensagem);
+        this.showAlarmeError(mensagem);
+        input.focus();
+    }
+
+    private showAlarmeError(mensagem: string): void {
+        if (typeof window.showErrorModal === 'function') {
+            window.showErrorModal('Conta de alarme inexistente', mensagem);
+        } else if (typeof window.showToast === 'function') {
+            window.showToast(mensagem, 'danger');
+        }
     }
 
     prepareFormData(): Record<string, unknown> {
@@ -343,8 +384,21 @@ class EditarCamera {
 
             if (!response.ok || !resultado || resultado.success !== true) {
                 const mensagem = resultado?.message || `Erro HTTP: ${response.status}`;
+                const erroAlarme = /alarme/i.test(mensagem);
+
+                if (erroAlarme) {
+                    const alarmeInput = document.getElementById('alarmeConta') as HTMLInputElement | null;
+                    if (alarmeInput) {
+                        marcarContaInvalida(alarmeInput, mensagem);
+                        alarmeInput.focus();
+                    }
+                }
+
                 if (typeof window.showErrorModal === 'function') {
-                    window.showErrorModal('Não foi possível atualizar a câmera', mensagem);
+                    window.showErrorModal(
+                        erroAlarme ? 'Conta de alarme inexistente' : 'Não foi possível atualizar a câmera',
+                        mensagem
+                    );
                 } else {
                     window.showToast(mensagem, 'danger');
                 }
@@ -408,6 +462,10 @@ async function initCameraEditor(): Promise<void> {
     const filtroBuscaCamera = document.getElementById('filtroBuscaCamera') as HTMLInputElement;
     const btnBuscarCamera = document.getElementById('btnBuscarCamera') as HTMLElement;
     const marcaSelect = document.getElementById('marcaSelect') as HTMLSelectElement;
+    if (!form || !cameraSelector || !filtroBuscaCamera || !btnBuscarCamera) {
+        return;
+    }
+
     const params = new URLSearchParams(window.location.search);
     const idFromUrl = params.get('id');
     let cameras: Array<Record<string, unknown>> = [];
@@ -664,6 +722,13 @@ async function initCameraEditor(): Promise<void> {
                     wrapperAlarme.classList.remove('alarme-ativo');
                     inputAlarme.disabled = true;
                     inputAlarme.value = '';
+                    limparContaInvalida(inputAlarme);
+                }
+            });
+
+            inputAlarme.addEventListener('input', () => {
+                if (inputAlarme.classList.contains('is-invalid')) {
+                    limparContaInvalida(inputAlarme);
                 }
             });
         }

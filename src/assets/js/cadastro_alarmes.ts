@@ -1,5 +1,6 @@
 import { initAutocomplete, type AutocompleteItem } from './utils/autocomplete-utils';
 import { preencherCamposLocal } from './utils/alarme-local-fill';
+import { limparContaInvalida, marcarContaInvalida } from './utils/alarme-conta-field';
 
 (function (): void {
   let formDirty = false;
@@ -7,6 +8,35 @@ import { preencherCamposLocal } from './utils/alarme-local-fill';
 
   function getApiBase(): string {
     return window.APP_API_BASE || '';
+  }
+
+  function campoConta(form: HTMLFormElement): HTMLInputElement | null {
+    return form.querySelector<HTMLInputElement>('[name="conta"]');
+  }
+
+  function limparErroConta(form: HTMLFormElement): void {
+    const input = campoConta(form);
+    input?.classList.remove('is-invalid', 'is-valid');
+    input?.removeAttribute('aria-invalid');
+    const feedback = document.getElementById('alarmeContaFeedback');
+    if (feedback) feedback.textContent = 'Informe a conta.';
+  }
+
+  function marcarErroConta(form: HTMLFormElement, mensagem: string): void {
+    if (!/conta/i.test(mensagem)) return;
+
+    const input = campoConta(form);
+    marcarContaInvalida(input, mensagem, 'alarmeContaFeedback');
+    input?.focus();
+  }
+
+  function setupContaField(form: HTMLFormElement): void {
+    const input = campoConta(form);
+    input?.addEventListener('input', () => {
+      if (input.classList.contains('is-invalid')) {
+        limparContaInvalida(input);
+      }
+    });
   }
 
   function setupLocalAutocomplete(): void {
@@ -90,6 +120,8 @@ import { preencherCamposLocal } from './utils/alarme-local-fill';
 
   async function handleSubmit(event: Event): Promise<void> {
     const form = event.currentTarget as HTMLFormElement;
+    limparErroConta(form);
+
     if (!form.checkValidity()) {
       form.classList.add('was-validated');
       return;
@@ -113,11 +145,16 @@ import { preencherCamposLocal } from './utils/alarme-local-fill';
         body: JSON.stringify(payload)
       });
       if (!response.ok) {
-        throw new Error('Falha ao cadastrar alarme.');
+        const erro = await response.json().catch(() => null);
+        const mensagem = erro?.message || `Falha ao cadastrar alarme. (HTTP ${response.status})`;
+        marcarErroConta(form, mensagem);
+        throw new Error(mensagem);
       }
       const result = await response.json();
       if (!result.success) {
-        throw new Error(result.message || 'Falha ao cadastrar alarme.');
+        const mensagem = result.message || 'Falha ao cadastrar alarme.';
+        marcarErroConta(form, mensagem);
+        throw new Error(mensagem);
       }
 
       formDirty = false;
@@ -162,6 +199,7 @@ import { preencherCamposLocal } from './utils/alarme-local-fill';
       window.aplicarUppercaseUniversal(form);
     }
     setupCharCounters();
+    setupContaField(form);
     setupDirtyTracking(form);
     setupBeforeUnload();
     setupLocalAutocomplete();

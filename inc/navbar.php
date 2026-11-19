@@ -1,9 +1,15 @@
 <?php use App\Services\NotificacaoService; ?>
+<style nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
+.navbar .navbar-logo {
+    height: 40px;
+    width: auto;
+}
+</style>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
         <a class="navbar-brand fw-bold" href="?page=home">
-            <i class="fas fa-camera me-2"></i>
-            SIGMON
+            <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/logo_sigmon.png"
+                 alt="SIGMON" class="navbar-logo">
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

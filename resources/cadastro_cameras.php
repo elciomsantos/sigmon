@@ -158,6 +158,7 @@ unset($_SESSION['form_data']);
                                                 maxlength="50"
                                                 <?= $temAlarme ? '' : 'disabled' ?>>
                                             <div class="form-text form-text-brown">Número da conta cadastrada na empresa de monitoramento</div>
+                                            <div class="invalid-feedback" id="alarmeContaFeedback">Conta de alarme inválida.</div>
                                         </div>
                                     </div>
                                 </div>

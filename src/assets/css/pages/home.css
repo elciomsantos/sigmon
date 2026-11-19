@@ -115,6 +115,13 @@
     margin: 0;
 }
 
+.user-welcome-logo {
+    display: block;
+    max-width: 100%;
+    height: 88px;
+    width: auto;
+}
+
 .user-welcome .badge {
     font-size: 0.8rem;
     padding: 0.3rem 0.8rem;
@@ -175,6 +182,10 @@
 @media (max-width: 768px) {
     .user-welcome h1 {
         font-size: 1.5rem;
+    }
+
+    .user-welcome-logo {
+        height: 56px;
     }
 
     .stat-card h3 {

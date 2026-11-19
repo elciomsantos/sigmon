@@ -1,7 +1,8 @@
 import { CLASSIFICACAO_MAP } from './utils/classificacao-endereco';
 import { initAutocomplete, AutocompleteItem } from './utils/autocomplete-utils';
+import { limparContaInvalida, marcarContaInvalida, validarFormatoConta } from './utils/alarme-conta-field';
 
-class CadastroCamera {
+export class CadastroCamera {
     form!: HTMLFormElement;
     marcaSelect!: HTMLSelectElement;
     toggleModeloExistente!: HTMLInputElement;
@@ -594,21 +595,29 @@ class CadastroCamera {
         }
 
         const input = document.getElementById('alarmeConta') as HTMLInputElement | null;
-        const conta = (input?.value ?? '').trim();
-
-        if (conta === '') {
-            this.showAlarmeError('Informe a conta do alarme.');
-            input?.focus();
-            return false;
+        if (!input) {
+            return true;
         }
 
-        if (!/^\d+$/.test(conta)) {
-            this.showAlarmeError('Conta de alarme inexistente. Informe apenas números.');
-            input?.focus();
+        limparContaInvalida(input);
+        const mensagemErro = validarFormatoConta(input.value);
+
+        if (mensagemErro) {
+            this.setAlarmeContaError(input, mensagemErro);
             return false;
         }
 
         return true;
+    }
+
+    private markAlarmeContaInvalid(input: HTMLInputElement, mensagem: string): void {
+        marcarContaInvalida(input, mensagem);
+    }
+
+    private setAlarmeContaError(input: HTMLInputElement, mensagem: string): void {
+        this.markAlarmeContaInvalid(input, mensagem);
+        this.showAlarmeError(mensagem);
+        input.focus();
     }
 
     private showAlarmeError(mensagem: string): void {
@@ -712,9 +721,19 @@ class CadastroCamera {
 
             if (!response.ok || !resultado || resultado.success !== true) {
                 const mensagem = resultado?.message || `Erro HTTP: ${response.status}`;
-                const titulo = /alarme/i.test(mensagem)
+                const erroAlarme = /alarme/i.test(mensagem);
+                const titulo = erroAlarme
                     ? 'Conta de alarme inexistente'
                     : 'Não foi possível cadastrar a câmera';
+
+                if (erroAlarme) {
+                    const alarmeInput = document.getElementById('alarmeConta') as HTMLInputElement | null;
+                    if (alarmeInput) {
+                        this.markAlarmeContaInvalid(alarmeInput, mensagem);
+                        alarmeInput.focus();
+                    }
+                }
+
                 if (typeof window.showErrorModal === 'function') {
                     window.showErrorModal(titulo, mensagem);
                 } else {
@@ -909,8 +928,15 @@ function onReady(): void {
             wrapper.classList.remove('alarme-ativo');
             input.disabled = true;
             input.value = '';
+            limparContaInvalida(input);
         }
     };
+
+    input.addEventListener('input', () => {
+        if (input.classList.contains('is-invalid')) {
+            limparContaInvalida(input);
+        }
+    });
 
     chk.addEventListener('change', toggleAlarmeSection);
     toggleAlarmeSection();

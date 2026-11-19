@@ -23,8 +23,8 @@ $isEdit = $modo === 'editar';
             <div class="row g-3">
                 <div class="col-md-2">
                     <label class="form-label">Conta <span class="text-danger">*</span></label>
-                    <input type="number" name="conta" class="form-control" min="1" required>
-                    <div class="invalid-feedback">Informe a conta.</div>
+                    <input type="number" name="conta" id="alarmeConta" class="form-control" min="1" required>
+                    <div class="invalid-feedback" id="alarmeContaFeedback">Informe a conta.</div>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Status <span class="text-danger">*</span></label>

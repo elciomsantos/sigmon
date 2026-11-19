@@ -10,38 +10,60 @@ unset($_SESSION['error']);
 <style nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
 .page-login {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    min-height: 100vh;
-    padding: 24px;
-    background: url('<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/tela_fundo.png') no-repeat center center fixed;
-    background-color: #0f1e2f;
-    background-size: min(720px, 85vw) auto;
-    box-shadow:
-        inset 0 0 120px rgba(0, 0, 0, 0.6),
-        inset 0 0 0 6px rgba(255, 255, 255, 0.08);
+    height: 100vh;
+    overflow: hidden;
+    padding: 20mm 24px 8mm;
+    background-color: #f8f9fa;
 }
 
 .page-login .login-wrapper {
-    width: min(420px, 100%);
+    width: min(860px, 100%);
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.page-login footer.footer {
+    flex: 0 0 auto;
+    align-self: stretch;
+    margin-top: 45mm;
+    border-top: none;
 }
 
 .page-login .login-card {
-    background: rgba(255, 255, 255, 0.18);
+    width: min(420px, 100%);
+    margin: 0 auto;
+    background: rgba(233, 236, 239, 0.95);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22), 0 4px 12px rgba(0, 0, 0, 0.10);
     color: #132238;
     padding: 32px 28px;
 }
 
-.page-login .login-title {
-    font-weight: 600;
-    text-align: center;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
+.page-login .login-logo {
+    display: block;
+    width: 55px;
+    max-width: 85%;
+    height: auto;
+    margin: 0 auto 20px;
+}
+
+.page-login .login-banner {
+    display: block;
+    width: 100%;
+    max-width: 860px;
+    min-height: 0;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto;
 }
 
 .page-login .login-input {
@@ -60,11 +82,26 @@ unset($_SESSION['error']);
 .page-login .login-btn:hover {
     background-color: #152a45;
 }
+
+@media (max-height: 800px) {
+    .page-login {
+        padding: 10mm 24px 8mm;
+    }
+
+    .page-login footer.footer {
+        margin-top: 25mm;
+    }
+
+    .page-login .login-banner {
+        max-height: 20vh;
+    }
+}
 </style>
 
 <div class="login-wrapper">
     <div class="login-card">
-        <h3 class="login-title">Login</h3>
+        <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/tela_fundo.png"
+             alt="SIGMON" class="login-logo">
         <hr>
         <form action="?page=action_login_submit" method="post">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken(), ENT_QUOTES, 'UTF-8') ?>">
@@ -91,4 +128,6 @@ unset($_SESSION['error']);
             </small>
         </div>
     </div>
+    <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/Logo_banner_sigmon.png"
+         alt="SIGMON — Sistema Integrado de Gestão e Monitoramento" class="login-banner">
 </div>

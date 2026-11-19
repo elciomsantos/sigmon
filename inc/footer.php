@@ -1,11 +1,27 @@
-<?php if (($CURRENT_PAGE ?? '') === 'login') {
-    return;
-} ?>
+<?php
+// Versao de deploy: variavel de ambiente tem prioridade sobre o arquivo VERSION.
+$versaoDeploy = getenv('APP_VERSION');
+if ($versaoDeploy === false || trim((string) $versaoDeploy) === '') {
+    $arquivoVersao = dirname(__DIR__) . '/VERSION';
+    $versaoDeploy = is_file($arquivoVersao)
+        ? trim((string) file_get_contents($arquivoVersao))
+        : 'dev';
+}
+?>
+<style nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
+.footer .footer-logo {
+    height: 28px;
+    width: auto;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+</style>
 <footer class="footer mt-auto py-3 bg-light">
     <div class="container text-center">
         <span class="text-muted">
-            SIGMON — Sistema de Gerenciamento de Cameras e Alarmes &copy; <?php echo date('Y'); ?> -
-            <span class="developer-name">Beta +</span>
+            <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/Logotipo.png"
+                 alt="SIGMON" class="footer-logo">
+            <span class="badge bg-secondary ms-2">Vers&atilde;o <?= htmlspecialchars((string) $versaoDeploy, ENT_QUOTES, 'UTF-8') ?></span>
         </span>
     </div>
 </footer>
