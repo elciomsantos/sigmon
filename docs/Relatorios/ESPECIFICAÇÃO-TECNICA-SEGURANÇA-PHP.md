@@ -1138,7 +1138,7 @@ O Dockerfile deverá:
 Exemplo:
 
 ```dockerfile
-FROM php:8.4-fpm-alpine
+FROM php:8.5-fpm-alpine
 
 RUN addgroup -S app && \
     adduser -S app -G app
