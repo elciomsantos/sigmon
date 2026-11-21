@@ -53,7 +53,7 @@ Sistema web para gerenciamento centralizado de câmeras de segurança e centrais
 
 ## Requisitos
 
-- **PHP 8.4+** com extensões: `pdo_mysql`, `json`, `session`, `fileinfo`, `mbstring`, `zip`
+- **PHP 8.5.12+** com extensões: `pdo_mysql`, `json`, `session`, `fileinfo`, `mbstring`, `zip`
 - **MySQL 8.4 LTS** ou **MariaDB 10.5+**
 - **Composer** para dependências PHP
 - **Node.js 20+** (para build do frontend com Vite)
@@ -521,7 +521,7 @@ npm install && npm run build
 
 ## Tecnologias
 
-- **Backend**: PHP 8.4+, PDO, Monolog
+- **Backend**: PHP 8.5.12+, PDO, Monolog
 - **Frontend**: TypeScript, Vite 8, Bootstrap 5.3, Chart.js, PostCSS, esbuild
 - **Banco**: MySQL 8.0+ / MariaDB 10.5+
 - **Ícones**: Font Awesome 6 (self-host via npm `@fortawesome/fontawesome-free`)
