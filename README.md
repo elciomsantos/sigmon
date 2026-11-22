@@ -1,4 +1,17 @@
-# SIGMON — Sistema Integrado de Gestão e Monitoramento
+<div align="center">
+  <img src="/public/images/Logo_banner_sigmon.png" alt="Logo" width="300">
+
+  <h1># SIGMON — Sistema Integrado de Gestão e Monitoramento</h1>
+
+  <p align="center">
+
+
+  </p>
+</div>
+
+
+
+
 
 Sistema web para gerenciamento centralizado de câmeras de segurança e centrais de alarme em ambientes empresariais. Controle de equipamentos, manutenções, relatórios e geolocalização com autenticação hierárquica e API REST.
 
