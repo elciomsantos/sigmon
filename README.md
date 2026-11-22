@@ -1,91 +1,52 @@
 <div align="center">
-  <img src="/public/images/Logo_banner_sigmon.png" alt="Logo" width="300">
-
-  <h1># SIGMON — Sistema Integrado de Gestão e Monitoramento</h1>
-
-  <p align="center">
-
-
-  </p>
+  <img src="public/images/Logo_banner_sigmon.png" alt="SIGMON" width="300">
+  <h1>SIGMON — Sistema Integrado de Gestão e Monitoramento</h1>
+  <p>Gestão centralizada de câmeras de segurança e centrais de alarme</p>
 </div>
 
+Sistema web para gerenciamento de câmeras e centrais de alarme em ambientes
+empresariais: equipamentos, manutenções, relatórios e geolocalização, com
+autenticação hierárquica e API REST v2.
 
+## Sumário
 
+- [Visão geral](#visão-geral)
+- [Requisitos](#requisitos)
+- [Início rápido](#início-rápido)
+- [Configuração](#configuração)
+- [Estrutura do projeto](#estrutura-do-projeto)
+- [Roteamento](#roteamento)
+- [API](#api)
+- [Níveis de acesso](#níveis-de-acesso)
+- [Segurança](#segurança)
+- [Testes e qualidade](#testes-e-qualidade)
+- [Migrations](#migrations)
+- [Performance](#performance)
+- [Documentação](#documentação)
+- [Versão](#versão)
 
+## Visão geral
 
-Sistema web para gerenciamento centralizado de câmeras de segurança e centrais de alarme em ambientes empresariais. Controle de equipamentos, manutenções, relatórios e geolocalização com autenticação hierárquica e API REST.
-
-## Funcionalidades
-
-### Gestão de Câmeras
-- Cadastro, edição e exclusão de câmeras
-- Associação a locais, modelos e regiões
-- Status de operação (Ativo, Manutenção, Inativo)
-- Histórico completo de manutenções com anexos
-- Geolocalização e consulta automática de CEP
-- Painel de controle (dashboard) com métricas
-
-### Gestão de Alarmes
-- Cadastro e configuração de centrais de alarme
-- Associação a locais, regiões e contas
-- Status de monitoramento (Ativo, Inativo, Desligado, Manutenção, Pendente)
-- Integração com câmeras GM e DVRs
-- Painel de controle (dashboard) com métricas
-
-### Gestão de Locais
-- Cadastro de locais com tipos (escola, CMEI, posto de saúde, próprio, operadora)
-- Associação a regiões e secretarias
-- Endereço completo (CEP, UF, cidade, bairro, logradouro, número)
-- Geolocalização com coordenadas
-- Horário de funcionamento
-- Alarme integrado com conta
-
-### Gestão de Usuários
-- Três níveis de acesso hierárquico: `admin`, `supervisor`, `user`
-- Cadastro, edição, ativação/bloqueio de usuários
-- Redefinição de senha com token temporário
-- Troca de senha com validação de força
-
-### Manutenção
-- Registro de manutenções de câmeras e alarmes
-- Upload de fotos e documentos por equipamento
-- Histórico completo com filtros por data, tipo e status
-
-### Relatórios
-- Relatórios de câmeras e alarmes com filtros avançados
-- Auditoria de operações
-- Dados geolocalizados
-
-### API RESTful v2
-- 30 endpoints padronizados com formato consistente
-- Autenticação por sessão com controle de acesso por nível
-- Rate limiting por IP e endpoint (sliding window)
-- Validação robusta de entrada (RequestValidator)
-- Paginação de resultados
-- Suporte a CORS configurável
+| Área | Recursos |
+| --- | --- |
+| Câmeras | Cadastro, vínculo com locais/modelos/regiões, status de operação, histórico de manutenção com anexos, geolocalização e consulta de CEP, dashboard |
+| Alarmes | Centrais de alarme, vínculo com locais/regiões/contas, status de monitoramento, integração com câmeras GM e DVRs, dashboard |
+| Locais | Tipos (escola, CMEI, posto de saúde, próprio, operadora), regiões e secretarias, endereço completo, coordenadas, horário de funcionamento e alarme integrado |
+| Usuários | Níveis `admin`, `supervisor` e `user`; ativação/bloqueio, redefinição por token e validação de força da senha |
+| Manutenção | Registros de câmeras e alarmes, upload de fotos/documentos e filtros por data, tipo e status |
+| Relatórios | Filtros avançados, auditoria de operações, dados geolocalizados e Relatório Diário de Turno |
+| API v2 | Endpoints padronizados, sessão com controle por nível, rate limiting, validação de entrada, paginação e CORS configurável |
 
 ## Requisitos
 
-- **PHP 8.5.12+** com extensões: `pdo_mysql`, `json`, `session`, `fileinfo`, `mbstring`, `zip`
+- **PHP 8.5.12+** com extensões `pdo_mysql`, `apcu`, `openssl`, `mbstring`, `fileinfo`, `json`, `session`, `zip`
 - **MySQL 8.4 LTS** ou **MariaDB 10.5+**
-- **Composer** para dependências PHP
-- **Node.js 20+** (para build do frontend com Vite)
-- **Servidor web**: Apache (XAMPP/WAMP/LAMP) ou PHP built-in server
+- **Composer 2.4+**
+- **Node.js 22.11+, 24.11+ ou 26+** (ver `package.json`) para o build com Vite
+- **Apache 2.4+** (com `mod_rewrite`) ou PHP built-in server
+- Opcional: **Docker** com Compose (desenvolvimento e produção)
 
-## Instalação
-
-### 1. Clonar e instalar dependências
-
-```bash
-git clone https://github.com/elciomsantos/sigmon.git
-cd sigmon
-
-# Instalar dependências PHP
-composer install
-
-# Instalar dependências Node.js (frontend)
-npm install
-```
+## Início rápido
 
 ### Docker (desenvolvimento)
 
@@ -95,470 +56,192 @@ docker compose logs -f app
 docker compose down
 ```
 
-Acesse `http://localhost:5000/`. O Apache roda em `network_mode: host` na porta
-5000; o MySQL sobe junto na porta 3306. Para usar o Vite dev server
-(`npm run dev`, porta 3000), o proxy `/api` já aponta para essa mesma porta 5000.
+Acesse `http://localhost:5000/`. O Apache e o MySQL usam `network_mode: host`
+(MySQL na porta 3306). Antes do primeiro `up`, o compose exige o arquivo local
+`config/DB/private/proprios-pml.sql` (não versionado) na pasta de dados
+iniciais. Para o Vite dev server (`:3000`), o proxy `/api` já aponta para `:5000`.
 
-### 2. Configurar ambiente
+### Instalação local
 
-O sistema carrega configurações de uma pasta externa por segurança:
-
-**Windows (XAMPP):**
-```powershell
-New-Item -ItemType Directory -Path "C:\env\sigmon" -Force
-Copy-Item ".env.example" "C:\env\sigmon\.env"
-# Editar C:\env\sigmon\.env com credenciais do banco
-```
-
-**Linux:**
 ```bash
+composer install
+npm install && npm run build
+
+# Configuração fora do projeto (Windows: C:\env\sigmon\.env)
 sudo mkdir -p /etc/sigmon
 sudo cp .env.example /etc/sigmon/.env
-sudo chown -R www-data:www-data /etc/sigmon
-sudo chmod 700 /etc/sigmon
-```
+sudo chmod 700 /etc/sigmon && sudo chmod 600 /etc/sigmon/.env
+# edite as credenciais em /etc/sigmon/.env
 
-### 3. Importar banco de dados
-
-```bash
 mysql -u root -p < config/DB/cftv_gml.sql
+php -S localhost:8080 -t public/   # http://localhost:8080
 ```
 
-### 4. Build do frontend (opcional para desenvolvimento)
-
-```bash
-npm run build     # Produção
-npm run dev       # Desenvolvimento (Vite dev server em :3000)
-```
-
-### 5. Iniciar servidor
-
-**Apache (XAMPP):** Acessar `http://localhost/sigmon/public/`
-
-**PHP built-in server:**
-```bash
-php -S localhost:8080 -t public/
-# Acessar: http://localhost:8080
-```
+Com Apache, aponte o VirtualHost para `public/`. O passo a passo completo,
+incluindo Windows/XAMPP e solução de problemas, está em
+[`docs/SETUP.md`](docs/SETUP.md). Para produção, veja
+[`docs/DEPLOY.md`](docs/DEPLOY.md).
 
 ## Configuração
 
-### Variáveis de Ambiente
+As configurações ficam em uma pasta externa ao projeto, fora do DocumentRoot:
+
+- Linux: `/etc/sigmon/.env`
+- Windows: `C:\env\sigmon\.env`
+
+Variáveis principais (veja todas em [`.env.example`](.env.example)):
 
 ```env
-# Ambiente: development, testing, production
-SIGMON_ENV=development
-
-# Banco de Dados
+SIGMON_ENV=development                  # development | testing | production
 DB_HOST=localhost
 DB_NAME=cftv_gml
 DB_USER=seu_usuario
-DB_PASS=sua_senha
-
-# Proxy Confiavel (X-Forwarded-For trust)
-PROXY_TRUSTED_IPS=
-
-# Origens CORS (separadas por vírgula)
-APP_ALLOWED_ORIGINS=
-
-# Aplicação
+DB_PASS=sua_senha_forte
 APP_TIMEZONE=America/Sao_Paulo
-
-# Sessão (segundos)
 SIGMON_SESSION_TIMEOUT=3600
 SIGMON_SESSION_ABSOLUTE_TIMEOUT=28800
-
-# CSP (0=strict, 1=permite inline styles p/ Bootstrap)
 SIGMON_CSP_ALLOW_INLINE_STYLES=0
-
-# Vite Dev Server: URL base da API para o proxy
+PROXY_TRUSTED_IPS=
+APP_ALLOWED_ORIGINS=
 VITE_API_URL=http://localhost:5000
 ```
 
-> **Compatibilidade:** o prefixo `SIGMON_*` substitui o antigo `CAMERAS_*`, e o
-> arquivo de configuração passou a ser `/etc/sigmon/.env` (Linux) ou
-> `C:\env\sigmon\.env` (Windows). Os nomes/paths antigos (`CAMERAS_*` e
-> `/etc/sistema-cameras/.env`) continuam funcionando como fallback.
+> Os prefixos `SIGMON_*` substituem os antigos `CAMERAS_*`. Por compatibilidade,
+> os nomes antigos e o caminho `/etc/sistema-cameras/.env` ainda funcionam como
+> fallback. Detalhes em [`docs/SECURITY_ENV.md`](docs/SECURITY_ENV.md).
 
-## Estrutura do Projeto
+## Estrutura do projeto
 
-```
+```text
 sigmon/
-├── accounts/                    # Gestão de usuários
-│   ├── action_*.php            # Handlers de formulário (POST)
-│   ├── cadastroUsuario.php     # Cadastro de usuário
-│   ├── editarUsuario.php       # Edição de usuário
-│   ├── listarUsuario.php       # Listagem de usuários
-│   ├── administracao.php       # Painel administrativo
-│   ├── alterar_senha.php       # Alteração de senha
-│   └── trocar_senha.php        # Troca de senha (token)
-├── api/                         # API RESTful v2
-│   ├── bootstrap-api.php       # Bootstrap + roteamento da API
-│   └── v2/                     # Endpoints (30 arquivos)
-│       ├── api_alarmes.php
-│       ├── api_cameras.php
-│       ├── api_cadastrar_*.php
-│       ├── api_health.php
-│       ├── api_ping.php
-│       └── ...
-├── auth/                        # Autenticação
-│   ├── login.php               # Página de login
-│   ├── action_login_submit.php # Processar login
-│   ├── action_logout.php       # Logout
-│   └── recuperar_senha.php     # Recuperação de senha
-├── config/                      # Configuração do sistema
-│   ├── app.php                 # Config de sessão, CSP, HTTPS, env
-│   ├── database.php            # Conexão com banco
-│   └── DB/                     # Scripts SQL
-├── inc/                         # Includes compartilhados
-│   ├── security.php            # Hash (Argon2id/bcrypt), CSRF, CSP, audit
-│   ├── session_handler.php     # Gerenciamento de sessão
-│   ├── single_session.php      # Sessão única com binding IP+UA
-│   ├── header.php              # Layout principal + navbar
-│   ├── footer.php              # Scripts globais
-│   ├── navbar.php              # Menu de navegação
-│   ├── pages.php               # Whitelist de páginas
-│   ├── access_rules.php        # Regras de acesso por página
-│   ├── check_access.php        # Verificação de permissão
-│   └── assets.php              # Asset pipeline
-├── resources/                   # Páginas de recursos
-│   ├── cadastro_cameras.php    # Cadastro de câmeras
-│   ├── cadastro_alarmes.php    # Cadastro de alarmes
-│   ├── cadastro_locais.php     # Cadastro de locais
-│   ├── listar_*.php            # Listagens
-│   ├── editar_*.php            # Edições
-│   ├── manutencao_*.php        # Manutenções
-│   ├── relatorios_*.php        # Relatórios
-│   ├── controle_*.php          # Dashboards/painéis
-│   ├── home.php                # Dashboard inicial
-│   └── action_*.php            # Handlers de formulário
-├── src/                         # Classes PHP
-│   ├── Api/
-│   │   ├── ApiResponse.php     # Respostas padronizadas
-│   │   ├── RateLimiter.php     # Rate limiting
-│   │   └── RequestValidator.php
-│   ├── Services/
-│   │   ├── AlarmeService.php   # Lógica de alarmes
-│   │   ├── EquipamentoService.php
-│   │   ├── LocaisService.php   # CRUD de locais
-│   │   └── LookupService.php   # CEP/geocode
-│   ├── Validation/
-│   │   └── FormValidator.php
-│   ├── ErrorHandler.php        # Tratamento global de erros
-│   └── assets/                 # Frontend source (TypeScript/CSS)
-│       ├── css/
-│       └── js/
-├── public/                      # Web root (DocumentRoot)
-│   ├── index.php               # Entry point único + roteador
-│   ├── .htaccess               # Regras Apache
-│   ├── sw.js                   # Service Worker (PWA)
-│   ├── assets/                 # Frontend compilado (Vite)
-│   ├── images/                 # Favicon, ícones PWA
-│   └── uploads/                # Anexos de manutenção
-├── dist/                        # Build do Vite (saída)
-├── docs/                        # Documentação
-│   ├── SETUP.md                # Setup detalhado
-│   └── SECURITY_ENV.md         # Segurança de ambiente
-├── storage/                     # Dados runtime
-│   ├── cep_cache/              # Cache de consultas CEP
-│   └── ratelimit/              # Dados de rate limiting
-├── tests/                       # Testes PHPUnit (176 testes)
-│   ├── Unit/                   # Testes unitários
-│   ├── Integration/            # Testes de integração
-│   ├── Api/                    # Testes de API (requer servidor http)
-│   └── bootstrap.php
-├── scripts/                     # Scripts auxiliares
-│   ├── backup.ps1 / backup.sh  # Backup do banco + uploads
-│   ├── port-forward.ps1        # Port forwarding
-│   ├── copy-assets.js          # Cópia de assets pós-build
-│   ├── optimize-database.php   # Otimização do banco
-│   └── run_migrations.php      # Runner de migrações
-├── composer.json
-├── package.json
-├── vite.config.ts
-├── tsconfig.json
-├── postcss.config.js
-└── phpunit.xml
+├── accounts/       # Usuários (cadastro, edição, listagem, administracao)
+├── api/            # Bootstrap e endpoints da API v2 (api/v2/)
+├── auth/           # Login, logout e recuperação de senha
+├── config/         # app.php, database.php, scripts SQL (config/DB/)
+├── database/       # Runner de migrations (migrate.php)
+├── dist/           # Saída do build do Vite
+├── docs/           # Documentação (índice em docs/README.md)
+├── inc/            # Segurança, sessão, layout, whitelist e acesso
+├── public/         # DocumentRoot: index.php, assets, images, uploads
+├── resources/      # Páginas e handlers (câmeras, alarmes, locais, etc.)
+├── scripts/        # Backup, OPcache, assets e utilitários
+├── src/            # Classes PHP (Api, Services, Validation) e fontes TS/CSS
+├── storage/        # Cache CEP e rate limiting
+├── tests/          # PHPUnit (Unit, Integration, Api) e Vitest (Js)
+├── composer.json / package.json / vite.config.ts / phpunit.xml
 ```
 
 ## Roteamento
 
-O sistema usa roteamento unificado em `public/index.php`. Toda requisição passa pelo entry point que gerencia:
+Toda requisição passa pelo front controller `public/index.php`:
 
-| Tipo | Descrição |
-|------|-----------|
-| `action` | Processa POST, retorna JSON/redirect, sem layout |
-| `mixed` | Intercepta POST com `submit`, senão renderiza com layout |
-| `logout` | Limpa sessão e redireciona |
-| Página normal | Renderiza com header/footer via `resolvePageScriptPath()` |
+| Tipo | Comportamento |
+| --- | --- |
+| `action` | Processa POST e retorna JSON/redirect, sem layout |
+| `mixed` | Intercepta POST com `submit`; caso contrário renderiza com layout |
+| `logout` | Limpa a sessão e redireciona |
+| Página | Renderizada com header/footer via whitelist de páginas |
 | API | Prefixo `api/` → bootstrap da API → JSON |
-| 404 | Página não encontrada na whitelist |
+| 404 | Página fora da whitelist |
 
-## API Endpoints
+## API
 
-Todos os endpoints usam `index.php?page=api/` como base. Formato de resposta padronizado:
+Os endpoints são acionados via `index.php?page=api/<endpoint>` e retornam JSON
+no formato padronizado:
 
 ```json
 {"success": true, "code": "SUCCESS", "message": "...", "data": {}, "meta": {"timestamp": "...", "version": "v2", "request_id": "req_..."}}
 ```
 
-### Autenticação
-- `login` — Página de login
-- `login_submit` — POST para autenticar
-- `logout` — Logout
+| Grupo | Endpoints (sem o prefixo `api/`) |
+| --- | --- |
+| Câmeras | `api_cameras`, `api_cadastrar_cameras`, `api_editar_camera`, `api_excluir_camera`, `api_modelos_cameras`, `api_manutencao_cameras` |
+| Anexos | `api_upload_anexo`, `api_listar_anexos`, `api_servir_anexo`, `api_excluir_anexo` |
+| Alarmes | `api_alarmes`, `api_cadastrar_alarmes`, `api_editar_alarme`, `api_excluir_alarme`, `api_modelos_alarmes`, `api_manutencao_alarmes` |
+| Auditoria e notificações | `api_auditoria_cameras`, `api_auditoria_alarmes`, `api_notificacoes` |
+| Dashboard e relatórios | `api_dashboard`, `api_status`, `api_relatorios_cameras`, `api_relatorio_diario`, `api_exportar_locais` |
+| Utilitários | `api_ping` (público), `api_health` (admin), `api_cep_lookup`, `api_geocode`, `api_locais` |
+| Sessão | `session_check`, `renovar_sessao`, `limpar_sessoes_orfas` (admin) |
+| Documentação viva | `api/v2/swagger`, `api/v2/swagger-spec` (admin) |
 
-### Câmeras
-- `api/api_cameras` — GET Listar (paginado)
-- `api/api_cadastrar_cameras` — POST Cadastrar
-- `api/api_editar_camera` — GET/POST Editar
-- `api/api_excluir_camera` — POST Excluir
-- `api/api_modelos_cameras` — GET Listar modelos
-- `api/api_manutencao_cameras` — GET Manutenções
-- `api/api_upload_anexo` — POST Upload anexo
-- `api/api_listar_anexos` — GET Listar anexos
-- `api/api_servir_anexo` — GET Baixar anexo
-- `api/api_excluir_anexo` — POST Excluir anexo
+A especificação completa está em [`docs/openapi.yaml`](docs/openapi.yaml).
+Autenticação por cookie de sessão e token CSRF (`X-CSRF-Token`) nas requisições
+que não sejam GET.
 
-### Alarmes
-- `api/api_alarmes` — GET Listar (paginado)
-- `api/api_cadastrar_alarmes` — POST Cadastrar
-- `api/api_editar_alarme` — GET/POST Editar
-- `api/api_excluir_alarme` — POST Excluir
-- `api/api_manutencao_alarmes` — GET Manutenções
-- `api/api_modelos_alarmes` — GET Listar modelos
-
-### Auditoria
-- `api/api_auditoria_cameras` — GET Auditoria de câmeras (paginado)
-- `api/api_auditoria_alarmes` — GET Auditoria de alarmes (paginado)
-
-### Notificações
-- `api/api_notificacoes` — GET Notificações do usuário
-
-### Utilitários
-- `api/api_exportar_locais` — GET Exportar locais (CSV)
-- `api/api_manutencao_utils` — POST Payload de manutenção (utilidades)
-
-### Dashboard e Relatórios
-- `api/api_dashboard` — GET Métricas do dashboard
-- `api/api_relatorios_cameras` — GET Relatórios
-- `api/api_status` — GET Status agregados
-
-### Utilitários
-- `api/api_ping` — GET Ping (público)
-- `api/api_health` — GET Health check (admin)
-- `api/api_cep_lookup` — GET Consulta CEP
-- `api/api_geocode` — GET Geocodificação
-- `api/api_locais` — GET Listar locais
-- `api/api_get_modelos` — GET Modelos
-
-### Sessão
-- `api/session_check` — GET Verificar sessão
-- `api/renovar_sessao` — POST Renovar sessão
-- `api/limpar_sessoes_orfas` — POST Limpar sessões órfãs (admin)
-
-### Documentação da API
-- `api/v2/swagger` — UI Swagger interativa (admin)
-- `api/v2/swagger-spec` — Spec OpenAPI (admin)
-
-## Níveis de Acesso
+## Níveis de acesso
 
 | Nível | Descrição |
-|-------|-----------|
-| `admin` | Acesso completo, gerencia usuários, health check |
-| `supervisor` | Gerencia câmeras, alarmes, locais, manutenções |
+| --- | --- |
+| `admin` | Acesso completo; gerencia usuários e health check |
+| `supervisor` | Gerencia câmeras, alarmes, locais e manutenções |
 | `user` | Visualização e operações básicas |
 
-A hierarquia é cumulativa: `admin > supervisor > user`. Usuários com nível superior automaticamente têm acesso aos níveis inferiores.
+A hierarquia é cumulativa: `admin > supervisor > user`.
 
 ## Segurança
 
-### Medidas Implementadas
+- Senhas com Argon2id e auto-rehash de bcrypt legado
+- CSRF com token rotativo por sessão, sincronizado via interceptor de `fetch`
+- Sessão única por usuário com binding de IP + User-Agent; cookies `HttpOnly`,
+  `SameSite=Lax` e `Secure` sob HTTPS
+- Rate limiting por IP e endpoint (login, API, upload, geocode)
+- Prepared statements, `htmlspecialchars()` e CSP com nonce em produção
+- Upload com validação MIME (`finfo`), whitelist e nomes hasheados; proteção
+  contra path traversal via `realpath()`
+- Headers de resposta: `nosniff`, `X-Frame-Options`, `Referrer-Policy`,
+  `Permissions-Policy` e HSTS
+- `.env` obrigatoriamente fora do repositório
 
-| Medida | Implementação |
-|--------|---------------|
-| **Senhas** | Argon2id com auto-rehash de bcrypt legado, validação de comprimento mínimo (8 caracteres) |
-| **CSRF** | Token rotativo por sessão (sliding window de 3 tokens), sync automático via fetch interceptor |
-| **Sessão** | Sessão única por usuário com binding de IP + User-Agent, `HttpOnly`, `SameSite=Lax`, `Secure` (HTTPS) |
-| **Rate Limiting** | Login: 15 tentativas por 15 min por IP; API: configuração por endpoint |
-| **SQL Injection** | 100% prepared statements com `EMULATE_PREPARES=false` |
-| **XSS** | `htmlspecialchars()` + CSP nonce-based em produção |
-| **Upload** | Validação MIME via `finfo`, whitelist de tipos, nomes hasheados |
-| **Path Traversal** | Verificação com `realpath()` |
-| **CSP** | Nonce-based, política restritiva por diretiva |
-| **Headers** | `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy`, `Permissions-Policy`, HSTS |
-| **Config** | Variáveis de ambiente em pasta externa (fora do DocumentRoot) |
+Em produção: defina `SIGMON_ENV=production`, ative HTTPS/HSTS e
+`SIGMON_FORCE_HTTPS_SESSION=1`, mantenha `SIGMON_CSP_ALLOW_INLINE_STYLES=0`,
+configure `APP_ALLOWED_ORIGINS`, habilite OPcache e faça backups diários
+(`scripts/backup.sh` ou `backup.ps1`).
+Contexto adicional: [`docs/SECURITY_REPORT.md`](docs/SECURITY_REPORT.md),
+[`docs/ADR_SEGURANCA.md`](docs/ADR_SEGURANCA.md) e
+[`docs/PROD_READINESS_REPORT.md`](docs/PROD_READINESS_REPORT.md).
 
-### Boas Práticas em Produção
-
-1. Definir `SIGMON_ENV=production`
-2. Habilitar `SIGMON_FORCE_HTTPS_SESSION=1`
-3. Configurar `SIGMON_CSP_ALLOW_INLINE_STYLES=0`
-4. Usar HTTPS com HSTS
-5. Configurar `APP_ALLOWED_ORIGINS` para CORS
-6. Manter `.env` fora do repositório
-7. Backups diários do banco (`scripts/backup.sh` ou `scripts/backup.ps1`)
-
-## Testes
+## Testes e qualidade
 
 ```bash
-# Rodar todos os testes
-vendor/bin/phpunit
-
-# Apenas unit tests
-vendor/bin/phpunit tests/Unit/
-
-# Apenas API tests (requer servidor http rodando)
-vendor/bin/phpunit tests/Api/
-
-# Análise estática (PHPStan nível 5)
-vendor/bin/phpstan analyse
+vendor/bin/phpunit                 # suíte PHPUnit
+vendor/bin/phpunit tests/Unit/     # testes unitários
+vendor/bin/phpunit tests/Api/      # requer servidor HTTP no ar
+vendor/bin/phpstan analyse         # análise estática (nível 5)
+npm test                           # Vitest
+php scripts/check-opcache.php      # smoke test de OPcache
 ```
 
-**176+ testes, 0 erros PHPStan, 0 falhas.**
-
-> Nota: skips ambientais ocorrem quando o servidor HTTP de teste não está no ar (tests/Api) ou o MySQL de teste não está disponível (tests/Integration) — não são regressões.
-
-| Suite | Testes | Cobertura |
-|-------|--------|-----------|
-| Unit | SecurityTest, LocaisServiceTest, AlarmeServiceTest, FileUploadValidationTest, LookupServiceTest | Classes core, validação, segurança, lookups |
-| Integration | EquipamentoServiceTest | CRUD com banco |
-| Api | AlarmeApiTest, CameraApiTest, HealthTest | Endpoints (requer servidor) |
+Skips podem ocorrer quando o servidor HTTP de teste ou o MySQL de teste não
+está disponível; não indicam regressão. Detalhes em
+[`docs/TESTS_REPORT.md`](docs/TESTS_REPORT.md) e
+[`docs/QUALITY_REPORT.md`](docs/QUALITY_REPORT.md).
 
 ## Migrations
 
-O sistema possui um runner de migrations em `database/migrate.php` (formato `YYYY_MM_DD_HHMMSS_description.php`).
-
 ```bash
-# Status: lista migrations aplicadas e pendentes
-php database/migrate.php --status
-
-# Aplicar migrations pendentes
-php database/migrate.php
-
-# Rollback das últimas N migrations
-php database/migrate.php --down 1
+php database/migrate.php --status   # aplicadas e pendentes
+php database/migrate.php            # aplica pendentes
+php database/migrate.php --down 1   # rollback da última migration
 ```
 
-### Migrations consolidadas no `cftv_gml.sql`
-
-As migrations abaixo já estão incorporadas ao schema principal
-(`config/DB/cftv_gml.sql`) e registradas na tabela `migrations` como
-aplicadas — ou seja, uma base nova importada via `cftv_gml.sql` **não
-precisa rodar `migrate.php`**. Os arquivos `.php` foram removidos do
-repositório no commit `de909e9`; o histórico permanece no git para
-referência.
-
-| Timestamp | Descrição |
-|-----------|-----------|
-| `2026_07_13_110000` | Triggers `trg_locais_bi`/`trg_locais_bu` de anti-duplicidade em `locais` |
-
-As migrations `2026_07_10_100000`, `2026_07_10_110000`, `2026_07_10_120000`,
-`2026_07_11_100000`, `2026_07_12_100000`, `2026_07_13_100000` e
-`2026_07_14_100000` foram consolidadas diretamente no schema e **não**
-são mais arquivos nem entradas da tabela `migrations`.
-
-Para adições futuras, crie novos arquivos `.php` em `database/migrations/`
-seguindo o formato `YYYY_MM_DD_HHMMSS_description.php` (com `'up'` e
-`'down'` idempotentes quando possível) e rode `php database/migrate.php`.
-
-> **Nota sobre DDL MySQL**: O MySQL faz commit implícito em operações DDL (`ALTER`, `CREATE TABLE`, `RENAME`, `DROP`, `TRIGGERS`, `EVENTS`). O runner detecta esse caso e registra a migration post-hoc via INSERT autônomo para evitar reprocesamento. Mensagem `OK (DDL auto-committed; migration registered post-hoc)` é esperada em migrations DDL-heavy.
-
-### Aplicar em produção
-
-```bash
-# 1. Aplicar todas as migrations pendentes
-php database/migrate.php
-
-# 2. Verificar status final
-php database/migrate.php --status
-# Deve mostrar: Total: N | Applied: N | Pending: 0
-```
+Uma base nova importada de `config/DB/cftv_gml.sql` já contém as migrations
+consolidadas registradas; não é necessário rodar o runner na primeira
+instalação. Novos arquivos seguem o formato
+`YYYY_MM_DD_HHMMSS_description.php` em `database/migrations/`.
 
 ## Performance
 
-O sistema passou por uma análise e otimização de performance em 3 tiers (commits `e2bf436`, `d7cfb20`, `d049535`, `e2de9d6`). Diagnóstico completo em `docs/concluidos/Relatorio_Performance.md` (relatório concluído, mantido para referência histórica).
+O sistema passou por três tiers de otimização (cache APCu, `Cache-Control`/ETag,
+índices de banco, compressão Brotli/gzip e Font Awesome self-hosted). O
+diagnóstico completo e a lista de alterações estão em
+[`docs/concluidos/Relatorio_Performance.md`](docs/concluidos/Relatorio_Performance.md)
+e [`docs/PERFORMANCE_REPORT.md`](docs/PERFORMANCE_REPORT.md).
 
-### Resumo das otimizações aplicadas
+## Documentação
 
-| Tier | Item | Impacto |
-|------|------|---------|
-| **1** | Fix `Cache-Control` API (14 endpoints GET) | **Alto** — ativa cache browser 60s |
-| **1** | Dashboard APCu TTL 10s→60s | **Alto** — 6x menos cache misses |
-| **1** | Dashboard: `WHERE deleted_at IS NULL` em alarmes | Bug fix + perf |
-| **1** | Dashboard query 7: filtro `os_status_id IN (1,2)` | **Alto** — evita full scan |
-| **1** | Cache APCu 300s em lookups (status, procedimento, getDefaultIds) | Médio |
-| **1** | `.htaccess`: `Vary: Accept-Encoding` + `immutable` + servir `.gz` precomprimidos | Médio |
-| **1** | Remover `UPPER()` de queries (collation é `utf8mb4_unicode_ci`) | Médio — usa índices UNIQUE |
-| **2** | Eliminar queries 8+9 do dashboard (duplicam 1+3) | Médio |
-| **2** | COUNT trimado em `api_relatorios_cameras.php` (sem 14 JOINs) | **Alto** |
-| **2** | APCu 30s em `api_cameras.php` + `api_alarmes.php` (hash de filtros) | **Alto** |
-| **2** | APCu em `api_manutencao_alarmes.php` (espelhar gêmeo) | Médio |
-| **2** | Chart.js isolado em chunk `vendor-chart` (`manualChunks`) | Médio |
-| **2** | ETag + 304 Not Modified em `api_servir_anexo.php` | Médio |
-| **2** | APCu 60s em `api_relatorios_cameras.php` (hash de filtros) | Médio |
-| **3** | Índices DB: `central_alarmes(ip, mac, numero_sei)`, `equipamentos_anexos(created_at, created_by)` | **Alto** |
-| **3** | Endpoints `api_status`/`api_modelos_*` usando `LookupService` com APCu 300s | Baixo |
-| **3** | `<link rel="modulepreload">` para entry chunks (fetch+parse em paralelo) | Médio |
-| **3** | **Brotli precompressão** no Vite (level 11) + `.htaccess` serve `.br` com prioridade sobre `.gz` | Médio — ~17% extra menor que gzip |
-| **3** | **Self-host Font Awesome** via `@fortawesome/fontawesome-free` npm + SCSS import + webfonts no build | Médio — elimina CDN render-blocking |
-| **3** | Script `scripts/check-opcache.php` — smoke test OPcache para CI/deploy | **Alto** se OPcache OFF |
+O índice completo, com guias, auditorias, planos e documentos históricos, está
+em [`docs/README.md`](docs/README.md).
 
-### Estrutura de cache
+## Versão
 
-- **APCu** (opcache de usuário): 9 pontos de cache — dashboard, lookups, endpoints críticos
-- **HTTP `Cache-Control`**: 14 endpoints GET idempotentes com cache browser
-- **ETag/304**: `api_servir_anexo.php` (anexos imutáveis)
-- **Service Worker**: 3 caches (app/api/assets), cache-first para assets com hash, network-only para API
-- **Brotli + gzip precomprimidos**: `.htaccess` serve `.br` com prioridade, fallback `.gz`
-
-### Deploy de performance em produção
-
-```bash
-# 1. Aplicar migrations de índices (Tier 3 #18)
-php database/migrate.php
-
-# 2. Verificar OPcache ativo (exit 1 se OFF — bloquear deploy)
-php scripts/check-opcache.php
-
-# 3. Build frontend com Brotli + Font Awesome self-host
-npm install && npm run build
-
-# 4. Verificar suporte a Brotli no Apache 2.4+
-#    (mod_brotli ativo OU RewriteCond servindo .br — já configurado no .htaccess)
-
-# 5. Validar cache hits do Font Awesome self-hosted no DevTools
-#    (não deve haver mais requests para cdnjs.cloudflare.com/font-awesome)
-
-# 6. Monitorar slow_query_log MySQL por 1 semana pós-deploy
-```
-
-## Tecnologias
-
-- **Backend**: PHP 8.5.12+, PDO, Monolog
-- **Frontend**: TypeScript, Vite 8, Bootstrap 5.3, Chart.js, PostCSS, esbuild
-- **Banco**: MySQL 8.0+ / MariaDB 10.5+
-- **Ícones**: Font Awesome 6 (self-host via npm `@fortawesome/fontawesome-free`)
-- **Mapa**: Leaflet
-- **Testes**: PHPUnit 10, Vitest
-- **Análise**: PHPStan (nível 5), PHP_CodeSniffer, roave/security-advisories
-- **Build**: Vite, compression plugin, PurgeCSS
-
----
-
-**Versão**: 1.0.0
-**Última atualização**: 2026-07-12 (Performance Tier 1+2+3 aplicados)
-
-Passos para nova implantação:
-1. `mysql -u root -p < config/DB/cftv_gml.sql` — importa schema completo (com todos os objetos: índices, triggers, procedures, eventos, partições e tabela `migrations` já populada)
-2. Copiar `.env.example` → configurar credenciais em `C:\env\sigmon\.env` (Windows) ou `/etc/sigmon/.env` (Linux)
-3. `composer install` — dependências PHP
-4. `npm install && npm run build` — build frontend (Vite + Brotli + Font Awesome self-host + webfonts)
-5. `php database/migrate.php --status` — confirma que não há migrations pendentes (`Total: 0 | Applied: 14 | Pending: 0`)
-6. `php scripts/check-opcache.php` — validar OPcache ativo (recomendado)
-7. Configurar Apache/Nginx apontando para `public/`
-
-Atualizações em instâncias existentes:
-1. `git pull` — obter código novo
-2. `composer install && npm install && npm run build` — atualizar dependências e rebuild frontend
-3. `php database/migrate.php` — aplicar migrations pendentes (índices, auditoria buffer, etc.) — em instalações novas via `cftv_gml.sql`, todas já aplicadas
-4. `php scripts/check-opcache.php` — validar OPcache (em especial se mudou PHP.ini)
+**v1.0.0** (ver [`VERSION`](VERSION)) — licença proprietária.
