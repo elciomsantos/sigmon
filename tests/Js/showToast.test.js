@@ -1,10 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('showToast', () => {
   beforeEach(() => {
     vi.resetModules()
-    globalThis.window = {}
-    globalThis.document = {
+    // No Vitest 5/jsdom, `document` é uma propriedade somente leitura de
+    // `window`; use stubGlobal para substituí-la com segurança.
+    vi.stubGlobal('window', {})
+    vi.stubGlobal('document', {
       addEventListener: vi.fn(),
       querySelector: vi.fn(),
       createElement: vi.fn(() => ({
@@ -17,7 +19,11 @@ describe('showToast', () => {
       body: {
         appendChild: vi.fn(),
       },
-    }
+    })
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
   })
 
   it('should be defined as a function in ui-utils', async () => {
