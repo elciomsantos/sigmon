@@ -30,7 +30,7 @@
     "cssnano": "^9.9.0",
     "esbuild": "^0.28.1",
     "jsdom": "^30.0.1",
-    "postcss": "^8.5.15",
+    "postcss": "^8.5.33",
     "rimraf": "^6.1.4",
     "sass": "^1.108.2",
     "sass-embedded": "^1.108.2",
