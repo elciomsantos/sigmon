@@ -14,7 +14,7 @@
 # ============================================
 # Stage base — dependencias de sistema + extensões PHP + Apache
 #============================================
-FROM php:8.5-apache AS base
+FROM php:8.6-apache AS base
 
 LABEL org.opencontainers.image.source="https://github.com/elciomsantos/sigmon"
 LABEL org.opencontainers.image.description="Sistema de Gerenciamento de Cameras e Alarmes"
