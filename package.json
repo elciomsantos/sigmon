@@ -21,7 +21,7 @@
     "not dead"
   ],
   "devDependencies": {
-    "@fullhuman/postcss-purgecss": "^8.0.0",
+    "@fullhuman/postcss-purgecss": "^9.1.0",
     "@types/bootstrap": "^5.2.11",
     "@types/node": "^26.0.0",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
