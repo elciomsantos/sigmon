@@ -44,7 +44,7 @@
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.9",
     "chart.js": "^4.6.1",
-    "js-yaml": "^5.4.1"
+    "js-yaml": "^5.5.0"
   },
   "allowScripts": {
     "@parcel/watcher@2.6.0": true,
