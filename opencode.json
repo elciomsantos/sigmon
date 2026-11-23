@@ -90,16 +90,6 @@
       ]
     },
 
-    "ssh": {
-      "type": "local",
-      "enabled": true,
-      "command": [
-        "npx",
-        "-y",
-        "mcp-ssh-manager"
-      ]
-    },
-
     "playwright": {
       "type": "local",
       "enabled": true,
