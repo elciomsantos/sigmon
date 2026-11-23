@@ -44,6 +44,9 @@ updates:
         patterns:
           - "vite*"
           - "@vitejs/*"
+          # vitest e @vitest/* são peer dependencies: precisam ser
+          # atualizados juntos (PRs separados quebram o `npm ci`).
+          - "@vitest/*"
           - "eslint*"
           - "prettier*"
           - "typescript*"
