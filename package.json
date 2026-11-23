@@ -23,7 +23,7 @@
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^9.1.0",
     "@types/bootstrap": "^5.2.11",
-    "@types/node": "^26.0.0",
+    "@types/node": "^26.6.6",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
     "@vitest/coverage-v8": "^5.1.1",
     "autoprefixer": "^10.5.0",
